@@ -434,7 +434,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &410087040
 Light:
   m_ObjectHideFlags: 0
@@ -558,6 +558,10 @@ PrefabInstance:
     - target: {fileID: 184210, guid: 5c0964d41c7715b45a75de64be203f9f, type: 3}
       propertyPath: m_Name
       value: UnityMainThreadDispatcher
+      objectReference: {fileID: 0}
+    - target: {fileID: 184210, guid: 5c0964d41c7715b45a75de64be203f9f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22414968, guid: 5c0964d41c7715b45a75de64be203f9f, type: 3}
       propertyPath: m_Pivot.x
@@ -1042,7 +1046,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1182785223
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1232,6 +1236,7 @@ MonoBehaviour:
   _skeletonType: 4
   blackKeyOffset: 2.5
   blackKeyHeight: 0.01
+  _debugMode: 0
 --- !u!1 &1260593882
 GameObject:
   m_ObjectHideFlags: 0
@@ -1709,7 +1714,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1934885235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1865,6 +1870,54 @@ Transform:
   - {fileID: 2125095795}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2009230323
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2009230325}
+  - component: {fileID: 2009230324}
+  m_Layer: 0
+  m_Name: tester
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2009230324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2009230323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94ca59b018138de47bc53b53b28ef234, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _skeletonType: 0
+  blackKeyOffset: 2.5
+  blackKeyHeight: 0.01
+  _debugMode: 1
+--- !u!4 &2009230325
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2009230323}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.21941914, y: 0.9912584, z: 0.33365512}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2101387192
 GameObject:
   m_ObjectHideFlags: 0
@@ -2001,6 +2054,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: KeyboardConfiguration
       objectReference: {fileID: 0}
+    - target: {fileID: 7357410520063859163, guid: 4a86053e20dcc8641b7614bbd2a4ff1b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2018,6 +2076,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MIDIDevice
+      objectReference: {fileID: 0}
+    - target: {fileID: 4129604954850194955, guid: 52592b365df4f8e46895b48de4110d97,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7288669218531659036, guid: 52592b365df4f8e46895b48de4110d97,
         type: 3}
@@ -2168,7 +2231,7 @@ PrefabInstance:
     - target: {fileID: 1856501284433728329, guid: cc00fc66cb4da8b42bec6eb802f471f8,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8487424637905485586, guid: cc00fc66cb4da8b42bec6eb802f471f8,
         type: 3}
@@ -2253,3 +2316,4 @@ SceneRoots:
   - {fileID: 1352514094774822839}
   - {fileID: 2250334821446386781}
   - {fileID: 89557683}
+  - {fileID: 2009230325}

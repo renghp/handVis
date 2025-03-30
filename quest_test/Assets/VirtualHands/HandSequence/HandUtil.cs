@@ -24,6 +24,8 @@ public class HandUtil : MonoBehaviour
     private static List<int> whiteKeys = new List<int> { 0, 2, 4, 5, 7, 9, 11 };
     private static List<int> blackKeys = new List<int> { 1, 3, 6, 8, 10 };
 
+    [SerializeField]
+    private bool _debugMode;
     
 
 
@@ -31,7 +33,13 @@ public class HandUtil : MonoBehaviour
     {
         
     }
-    void Awake(){
+    void Awake()
+    {
+        if (_debugMode)
+        {
+            RunDebug();
+            return;
+        }
 
         _dataProvider = SearchSkeletonDataProvider();
         if(_dataProvider == null){ Debug.LogError("No data provider for util");
@@ -45,6 +53,22 @@ public class HandUtil : MonoBehaviour
 
         _configScript.OnActiveConfigChanged += configUpdate;
     }
+
+    void RunDebug()
+    {
+        Vector3[] fingertipPositions = new Vector3[5]
+        {
+            new Vector3(0.02f, 0.1f, 0.05f),
+            new Vector3(-0.03f, 0.12f, 0.02f),
+            new Vector3(0.01f, 0.15f, -0.04f),
+            new Vector3(-0.02f, 0.13f, 0.06f),
+            new Vector3(0.04f, 0.11f, -0.03f)
+        };
+
+        Vector3 targetPos = new Vector3(0.04f, 0.11f, -0.03f);
+        Debug.Log(ClosestFinger3D(targetPos, fingertipPositions));
+    }
+
     private void configUpdate(ConfigurePhysicalKeyboard.Config _){
         Debug.Log("Config update inside Util");
         _config = _configScript.activeConfig;
@@ -69,36 +93,83 @@ public class HandUtil : MonoBehaviour
         };
 
         int anchorKey = _config.anchorKey;
-        float[] xPos = new float[5];
+        Vector3[] transformedFingerPositions = new Vector3[5];
 
         for (int i = 0; i < fingertipPositions.Length; i++) 
         {
-            xPos[i] = _m.MultiplyPoint(fingertipPositions[i]).x;
+            transformedFingerPositions[i] = _m.MultiplyPoint(fingertipPositions[i]);
         }
 
-        Vector3 keyPos = getMidPositionFromKey(key);
-
-       
+        Vector3 keyPos = getMidPositionFromKey(key, forwardMode:1);
+        
         keyPos = _m.MultiplyPoint(keyPos);
-        // when we transform into keyboard space, the keyboard keys goes along the X axis, the forward vector will go into the Z axis, and up is Y.
-        // We dont care about Z and Y so we can ignore them. And only check which finger pos is closest to X.
+        
         Debug.Log("keypos: " + keyPos);
-        Debug.Log("xpos: " + xPos);
-        return ClosestFinger(keyPos.x, xPos);
+        
+        return ClosestFinger1D(keyPos, transformedFingerPositions);
     }
 
-    public static int ClosestFinger(float target, float[] numbers)
+    // when we transform into keyboard space, the keyboard keys goes along the X axis, the forward vector will go into the Z axis, and up is Y.
+    // When doing 1D check we don't care about Z and Y so we can ignore them. And only check which finger pos is closest to X.
+    public static int ClosestFinger1D(Vector3 target, Vector3[] tipPositions)
     {
-        return Array.IndexOf(numbers, numbers.OrderBy(n => Math.Abs(n - target)).First());
+        return Array.IndexOf(tipPositions, tipPositions.OrderBy(n => Math.Abs(n.x - target.x)).First());
+    }
+    
+    //using x and y, change to x and z ignore up dimension instead
+    public static int ClosestFinger2D(Vector3 target, Vector3[] tipPositions)
+    {
+        Vector2 target2D = new Vector2(target.x, target.y);
+        return Array.IndexOf(tipPositions, tipPositions.OrderBy(n => EuclideanDistance2D(new Vector2(n.x, n.y), target2D)).First());
+    }
+    
+    public static int ClosestFinger3D(Vector3 target, Vector3[] tipPositions)
+    {
+        return Array.IndexOf(tipPositions, tipPositions.OrderBy(n => EuclideanDistance3D(n, target)).First());
     }
 
-    Vector3 getMidPositionFromKey(int Key){
+    private static double EuclideanDistance2D(Vector2 point1, Vector2 point2)
+    {
+        return Math.Sqrt(Math.Pow(point1.x - point2.x, 2) + Math.Pow(point1.y - point2.y, 2));
+    }
+    private static double ManhattanDistance2D(Vector2 point1, Vector2 point2)
+    {
+        return Math.Abs(point1.x - point2.x) + Math.Abs(point1.y - point2.y);
+    }
+    
+    private static double EuclideanDistance3D(Vector3 point1, Vector3 point2)
+    {
+        return Math.Sqrt(Math.Pow(point1.x - point2.x, 2) + 
+                         Math.Pow(point1.y - point2.y, 2) + 
+                         Math.Pow(point1.z - point2.z, 2));
+    }
+    private static double ManhattanDistance3D(Vector3 point1, Vector3 point2)
+    {
+        return Math.Abs(point1.x - point2.x) + 
+               Math.Abs(point1.y - point2.y) + 
+               Math.Abs(point1.z - point2.z);
+    }
+
+    private Vector3 getMidPositionFromKey(int Key, int heightMode = 0, int forwardMode = 0){
         int scaleKey = Key%12;
+        //get point on scale, without taking into consideration octave and anchor point.
         Vector3 scalePos = getMidPositionFromScaleKey(scaleKey); 
         int octave = Key / 12;
         int anchorOctave = _config.anchorKey / 12;
         Vector3 octaveVector = Vector3.Normalize(_config.rightCornerPosition - _config.leftCornerPosition) * _config.octaveWidth;
+        // If first key is not the same as the start of octave, this will add an offset.
         Vector3 octaveOffsetFromAnchor = (octave - anchorOctave) * octaveVector;
+
+        // This forwardMode changes which point on the key will returned, 0 will be att the lowest point of the key,
+        // then 1 will be small distance forward, 2 another step and so on. change pointMult to distance between points.
+        float keyDist = _config.oneKeyVector.magnitude;
+        float approxWhiteKeyLength = keyDist * 5.0f;
+        float pointMult = whiteKeys.Contains(scaleKey) ? 0.2f : 0.15f;
+        scalePos += (_config.forwardVector * approxWhiteKeyLength) * forwardMode * pointMult;
+        
+        // Offsets the point down a little but, it could simulate the key being pushed down
+        if (heightMode == 1) scalePos += Vector3.down * approxWhiteKeyLength * 0.5f;
+
         return scalePos + octaveOffsetFromAnchor + _config.anchor;
     }
 
