@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -233,7 +234,7 @@ public class ConfigurePhysicalKeyboard : MonoBehaviour
             RightConfigSphere.transform.position = IndexPosition + Vector3.down * 0.005f;
             RightConfigSphere.transform.localScale = Vector3.one * 0.01f;
             RightConfigSphere.GetComponent<Renderer>().material = redMaterial;
-            RightConfigSphere.name = "leftSphere";
+            RightConfigSphere.name = "rightSphere";
             _configStep = 2;
             _guideLineRender.shouldRender = true;
         }

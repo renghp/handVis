@@ -9,6 +9,7 @@ using Melanchall.DryWetMidi.Interaction;
 using Melanchall.DryWetMidi.Multimedia;
 using Melanchall.DryWetMidi.Standards;
 using System;
+using System.IO;
 
 
 public class KeyboardVisualizer : MonoBehaviour
@@ -54,6 +55,12 @@ public class KeyboardVisualizer : MonoBehaviour
     private KeyboardDataProvider _dataProvider;
     private ConfigurePhysicalKeyboard _config;
     private HandUtil _handUtil;
+
+    public bool logData;
+    public string logFileName;
+    
+    [SerializeField]
+    private bool _useActiveMIDI;
     
     void Start()
     {
@@ -76,16 +83,35 @@ public class KeyboardVisualizer : MonoBehaviour
             UnityMainThreadDispatcher.Instance().Enqueue(UpdateKeyboard());
         }
     }
-    public IEnumerator UpdateKeyboard(){
+    // updates the visualizations when new keys are down
+    public IEnumerator UpdateKeyboard()
+    {
+        Debug.Log("vis: updating keyboard");
         for (int i = leftKey; i <= rightKey; i++) {
             int fingerThatPressed = -1;
             if(_dataProvider.GetNotesDown().Contains(i) && !keyVisualizations[i - leftKey].IsRendering()){
                 fingerThatPressed = _handUtil.GetFingerFromKey(i);
                 keyVisualizations[i - leftKey].color = OVRHandData.GetColorFromFinger(fingerThatPressed);
+
+                if(logData) LogFingerToCSV(fingerThatPressed);
             }
             keyVisualizations[i - leftKey].Update(_dataProvider.GetNotesDown().Contains(i));
         }
         yield return null;
+    }
+
+    private void LogFingerToCSV(int finger) {
+        string filePath = "Assets/VirtualHands/fingerLogs/" + logFileName + ".csv";
+
+        if (!File.Exists(filePath)) {
+            using (StreamWriter writer = new StreamWriter(filePath, false)) {
+                writer.Write(finger + ",");
+            }
+        } else {
+            using (StreamWriter writer = new StreamWriter(filePath, true)) { 
+                writer.Write(finger + ",");
+            }
+        }
     }
 
     public class KeyVisualization{
@@ -165,7 +191,6 @@ public class KeyboardVisualizer : MonoBehaviour
     }
 
     void configUpdate(ConfigurePhysicalKeyboard.Config config){
-        Debug.Log(" ** UPDATING CONFIG ** ");
 
         leftKey = config.leftKey;
         rightKey = config.rightKey;
@@ -193,10 +218,22 @@ public class KeyboardVisualizer : MonoBehaviour
             );
         }
         _hasConfiguration = true;
+        Debug.Log("config updated");
+        StartCoroutine(UpdateKeyboard());
     }
 
     void SearchProvider(){
         if(_dataProvider == null) {
+            if (_useActiveMIDI)
+            {
+                GameObject deviceGO = GameObject.Find("MIDIDevice");
+                var providerGlobal =  deviceGO.GetComponent<KeyboardDataProvider>();
+                if(providerGlobal != null){
+                    _dataProvider = providerGlobal;
+                    return;
+                }else{Debug.LogError("No global provider found");}
+            }
+
             var provider = GetComponent<KeyboardDataProvider>();
             if(provider != null){
                 _dataProvider = provider;

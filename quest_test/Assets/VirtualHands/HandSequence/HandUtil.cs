@@ -26,7 +26,22 @@ public class HandUtil : MonoBehaviour
 
     [SerializeField]
     private bool _debugMode;
-    
+
+    public enum FingerCheckMode{
+        use1DEu,
+        use2DEu,
+        use3DEu,
+        use1DMa,
+        use2DMa,
+        use3DMa
+    }
+
+    public FingerCheckMode fingerCheckMode;
+
+    [SerializeField]
+    private int _forwardMode;
+    [SerializeField]
+    private int _heightMode;
 
 
     void Start()
@@ -100,13 +115,31 @@ public class HandUtil : MonoBehaviour
             transformedFingerPositions[i] = _m.MultiplyPoint(fingertipPositions[i]);
         }
 
-        Vector3 keyPos = getMidPositionFromKey(key, forwardMode:1);
+        Vector3 keyPos = getMidPositionFromKey(key, heightMode:_heightMode, forwardMode:_forwardMode);
         
         keyPos = _m.MultiplyPoint(keyPos);
         
         Debug.Log("keypos: " + keyPos);
         
-        return ClosestFinger1D(keyPos, transformedFingerPositions);
+        switch (fingerCheckMode)
+        {
+            case FingerCheckMode.use1DEu:
+                return ClosestFinger1D(keyPos, transformedFingerPositions);
+            case FingerCheckMode.use2DEu:
+                return ClosestFinger2D(keyPos, transformedFingerPositions);
+            case FingerCheckMode.use3DEu:
+                return ClosestFinger3D(keyPos, transformedFingerPositions);
+            case FingerCheckMode.use1DMa:
+                return ClosestFinger1DManhattan(keyPos, transformedFingerPositions);
+            case FingerCheckMode.use2DMa:
+                return ClosestFinger2DManhattan(keyPos, transformedFingerPositions);
+            case FingerCheckMode.use3DMa:
+                return ClosestFinger3DManhattan(keyPos, transformedFingerPositions);
+            default:
+                return ClosestFinger1D(keyPos, transformedFingerPositions);
+        }
+
+        //return ClosestFinger1D(keyPos, transformedFingerPositions);
     }
 
     // when we transform into keyboard space, the keyboard keys goes along the X axis, the forward vector will go into the Z axis, and up is Y.
@@ -126,6 +159,22 @@ public class HandUtil : MonoBehaviour
     public static int ClosestFinger3D(Vector3 target, Vector3[] tipPositions)
     {
         return Array.IndexOf(tipPositions, tipPositions.OrderBy(n => EuclideanDistance3D(n, target)).First());
+    }
+
+    public static int ClosestFinger1DManhattan(Vector3 target, Vector3[] tipPositions)
+    {
+        return Array.IndexOf(tipPositions, tipPositions.OrderBy(n => Math.Abs(n.x - target.x)).First());
+    }
+
+    public static int ClosestFinger2DManhattan(Vector3 target, Vector3[] tipPositions)
+    {
+        Vector2 target2D = new Vector2(target.x, target.y);
+        return Array.IndexOf(tipPositions, tipPositions.OrderBy(n => ManhattanDistance2D(new Vector2(n.x, n.y), target2D)).First());
+    }
+
+    public static int ClosestFinger3DManhattan(Vector3 target, Vector3[] tipPositions)
+    {
+        return Array.IndexOf(tipPositions, tipPositions.OrderBy(n => ManhattanDistance3D(n, target)).First());
     }
 
     private static double EuclideanDistance2D(Vector2 point1, Vector2 point2)

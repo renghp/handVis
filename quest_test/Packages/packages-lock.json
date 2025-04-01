@@ -283,6 +283,13 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.xr-line-renderer": {
+      "version": "https://github.com/Unity-Technologies/XRLineRenderer.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "eac20ca15e7d60835eca5e6e4adfa60c63196cbc"
+    },
     "com.unity.xr.core-utils": {
       "version": "2.3.0",
       "depth": 1,

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.XRTools.Rendering;
 using UnityEngine;
 
 public class RenderGuideLine : MonoBehaviour
@@ -13,7 +14,7 @@ public class RenderGuideLine : MonoBehaviour
     private Vector3 sphere1pos = Vector3.zero;
     private Vector3 sphere2pos = new Vector3(10.0f,0.01f,10.0f);
 
-    private LineRenderer _lr;
+    private XRLineRenderer _lr;
     public int numKeys = 17;
     private Vector3 _forwardVector;
 
@@ -22,6 +23,7 @@ public class RenderGuideLine : MonoBehaviour
 
     private ConfigurePhysicalKeyboard _configScript;
     private Material _defaultMaterial;
+    private bool _useXRLineRenderer;
 
     // Start is called before the first frame update
     void Start()
@@ -35,8 +37,15 @@ public class RenderGuideLine : MonoBehaviour
 
         _forwardVector = Vector3.Normalize(-Vector3.Cross(Vector3.up, sphere1pos - sphere2pos)) * insetLength;
 
-        _lr = GetComponent<LineRenderer>();
-        _lr.positionCount = (numKeys * 3)+1;
+        _lr = GetComponent<XRLineRenderer>();
+
+        if (_lr == null)
+        {
+            Debug.LogError("No line renderer found");
+        }
+
+        //_lr.positionCount = (numKeys * 3)+1;
+        _lr.SetVertexCount((numKeys * 3)+1);
         _lr.sharedMaterial = _defaultMaterial;
 
         /*
