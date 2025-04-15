@@ -14,7 +14,8 @@ public class RenderGuideLine : MonoBehaviour
     private Vector3 sphere1pos = Vector3.zero;
     private Vector3 sphere2pos = new Vector3(10.0f,0.01f,10.0f);
 
-    private XRLineRenderer _lr;
+    private VHLineRenderer _lralt;
+    private LineRenderer _lr;
     public int numKeys = 17;
     private Vector3 _forwardVector;
 
@@ -23,13 +24,16 @@ public class RenderGuideLine : MonoBehaviour
 
     private ConfigurePhysicalKeyboard _configScript;
     private Material _defaultMaterial;
-    private bool _useXRLineRenderer;
+    
+    [SerializeField]
+    private bool _useAltLineRenderer;
 
     // Start is called before the first frame update
     void Start()
     {
 
-        _defaultMaterial = new Material(Shader.Find("Diffuse"));
+        _defaultMaterial = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+        
         _configScript = GetComponent<ConfigurePhysicalKeyboard>();
 
         //sphere2 = _configScript.RightConfigSphere;
@@ -37,15 +41,16 @@ public class RenderGuideLine : MonoBehaviour
 
         _forwardVector = Vector3.Normalize(-Vector3.Cross(Vector3.up, sphere1pos - sphere2pos)) * insetLength;
 
-        _lr = GetComponent<XRLineRenderer>();
+        _lr = GetComponent<LineRenderer>();
+        _defaultMaterial.SetColor("_Color", _lr.startColor);
 
         if (_lr == null)
         {
             Debug.LogError("No line renderer found");
         }
 
-        //_lr.positionCount = (numKeys * 3)+1;
-        _lr.SetVertexCount((numKeys * 3)+1);
+        _lr.positionCount = (numKeys * 3)+1;
+        //_lr.SetVertexCount((numKeys * 3)+1);
         _lr.sharedMaterial = _defaultMaterial;
 
         /*

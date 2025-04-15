@@ -86,11 +86,10 @@ public class KeyboardVisualizer : MonoBehaviour
     // updates the visualizations when new keys are down
     public IEnumerator UpdateKeyboard()
     {
-        Debug.Log("vis: updating keyboard");
         for (int i = leftKey; i <= rightKey; i++) {
             int fingerThatPressed = -1;
             if(_dataProvider.GetNotesDown().Contains(i) && !keyVisualizations[i - leftKey].IsRendering()){
-                fingerThatPressed = _handUtil.GetFingerFromKey(i);
+                fingerThatPressed = _handUtil.GetFingerFromKey2(i);
                 keyVisualizations[i - leftKey].color = OVRHandData.GetColorFromFinger(fingerThatPressed);
 
                 if(logData) LogFingerToCSV(fingerThatPressed);

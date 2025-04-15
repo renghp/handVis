@@ -41,11 +41,17 @@ public class ConfigurePhysicalKeyboard : MonoBehaviour
     public int startKey = 48; // E4
     public int endKey = 76; // C2
     public int configKey = 28; // leftmost key
-
+    public int pausePlayKey = 29;
+    public int increaseSpeedKey = 33;
+    public int decreaseSpeedKey = 31;
+    
+    
     private static List<int> whiteKeys = new List<int> { 0, 2, 4, 5, 7, 9, 11 };
     private static List<int> blackKeys = new List<int> { 1, 3, 6, 8, 10 };
 
     public event Action<Config> OnActiveConfigChanged;
+    
+    public event Action<List<int>> OnKeyboardInputdeviceKeyPressed;
 
     public int numWhiteKeys = 17;
 
@@ -61,6 +67,7 @@ public class ConfigurePhysicalKeyboard : MonoBehaviour
         public Vector3 deltaVec;
         public int anchorKey;
         public float octaveWidth;
+        public float keyboardSurfaceLength;
     }
 
     public Config activeConfig;
@@ -143,6 +150,33 @@ public class ConfigurePhysicalKeyboard : MonoBehaviour
         if(_currentConfigMode == ConfigMode.Ready && _configStep == 1 && _device.notesDown.Contains(endKey)) {_currentConfigMode = ConfigMode.ActiveRight; UnityMainThreadDispatcher.Instance().Enqueue(toggleConfigMode());}
         if(_currentConfigMode == ConfigMode.Ready && _configStep == 2 && _device.notesDown.Contains(startKey)) {_currentConfigMode = ConfigMode.ActiveLeft;}
         if(_currentConfigMode == ConfigMode.Ready && _configStep == 2 && _device.notesDown.Contains(endKey)) {_currentConfigMode = ConfigMode.ActiveRight;}
+
+        List<int> inputlist = new List<int>();
+        
+        if (_device.notesDown.Contains(pausePlayKey))
+        {
+            Debug.Log("Playkey pressed inside config");
+            inputlist.Add(0);
+        }
+        if (_device.notesDown.Contains(increaseSpeedKey))
+        {
+            inputlist.Add(1);
+        }
+        if (_device.notesDown.Contains(decreaseSpeedKey))
+        {
+            inputlist.Add(2);
+        }
+        Debug.Log("input list count: " + inputlist.Count);
+        
+
+        if (inputlist.Count != 0) UnityMainThreadDispatcher.Instance().Enqueue(triggerInput(inputlist));
+
+    }
+
+    private IEnumerator triggerInput(List<int> inputList)
+    {
+         OnKeyboardInputdeviceKeyPressed?.Invoke(inputList);
+         yield return null;
     }
 
 
@@ -170,6 +204,7 @@ public class ConfigurePhysicalKeyboard : MonoBehaviour
         Vector3 oneKeyVector_temp = (deltaVec_temp * (octaveWidth_temp / 7.0f));
         Vector3 anchor_temp = leftCornerPosition_temp - oneKeyVector_temp * whiteKeys.IndexOf(startKey_oneOctave);
         Debug.Log("start key: " + startKey);
+        float keyBoardSurfaceLength_temp = (rightCornerPosition_temp - leftCornerPosition_temp).magnitude;
 
         activeConfig = new Config() {
             leftKey = leftKey_temp,
@@ -181,7 +216,8 @@ public class ConfigurePhysicalKeyboard : MonoBehaviour
             anchorKey = anchorKey_temp,
             deltaVec = deltaVec_temp,
             oneKeyVector = oneKeyVector_temp,
-            anchor = anchor_temp
+            anchor = anchor_temp,
+            keyboardSurfaceLength = keyBoardSurfaceLength_temp
         };
 
         Debug.Log("anchor pos:" + anchor_temp);

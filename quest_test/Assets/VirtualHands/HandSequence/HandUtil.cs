@@ -35,6 +35,35 @@ public class HandUtil : MonoBehaviour
         use2DMa,
         use3DMa
     }
+    
+    public class TestingData
+    {
+        public List<int> test_1D;
+        public List<int> test_2D;
+        public List<int> test_3D;
+        public List<int> test_2D_Manhattan;
+        public List<int> test_3D_Manhattan;
+        public List<int> test_3D_P1;
+        public List<int> test_3D_P2;
+        public List<int> test_3D_P3;
+        public List<int> test_comb1;
+        
+        public TestingData()
+        {
+            test_1D = new List<int>();
+            test_2D = new List<int>();
+            test_3D = new List<int>();
+            test_2D_Manhattan = new List<int>();
+            test_3D_Manhattan = new List<int>();
+            test_3D_P1 = new List<int>();
+            test_3D_P2 = new List<int>();
+            test_3D_P3 = new List<int>();
+            test_comb1 = new List<int>();
+        }
+    }
+    private TestingData _testingData;
+    public TestingData ActiveTestingData => _testingData;
+    
 
     public FingerCheckMode fingerCheckMode;
 
@@ -46,7 +75,7 @@ public class HandUtil : MonoBehaviour
 
     void Start()
     {
-        
+        _testingData = new TestingData();
     }
     void Awake()
     {
@@ -119,8 +148,6 @@ public class HandUtil : MonoBehaviour
         
         keyPos = _m.MultiplyPoint(keyPos);
         
-        Debug.Log("keypos: " + keyPos);
-        
         switch (fingerCheckMode)
         {
             case FingerCheckMode.use1DEu:
@@ -142,11 +169,125 @@ public class HandUtil : MonoBehaviour
         //return ClosestFinger1D(keyPos, transformedFingerPositions);
     }
 
+    public int GetFingerFromKey2(int key)
+    {
+        Vector3[] BoneTranslations = _dataProvider.GetHandFrameData().BoneTranslations;
+        Debug.Log(BoneTranslations[(int)OVRHandData.ovrHandEnum.ThumbTip]);
+
+        Vector3[] fingertipPositions = new Vector3[5]
+        {
+            BoneTranslations[(int)OVRHandData.ovrHandEnum.ThumbTip],
+            BoneTranslations[(int)OVRHandData.ovrHandEnum.IndexTip],
+            BoneTranslations[(int)OVRHandData.ovrHandEnum.MiddleTip],
+            BoneTranslations[(int)OVRHandData.ovrHandEnum.RingTip],
+            BoneTranslations[(int)OVRHandData.ovrHandEnum.LittleTip]
+        };
+
+        int anchorKey = _config.anchorKey;
+        Vector3[] transformedFingerPositions = new Vector3[5];
+
+        for (int i = 0; i < fingertipPositions.Length; i++) 
+        {
+            transformedFingerPositions[i] = _m.MultiplyPoint(fingertipPositions[i]);
+        }
+
+        Vector3 keyPos = getMidPositionFromKey(key, heightMode:_heightMode, forwardMode:_forwardMode);
+        
+        keyPos = _m.MultiplyPoint(keyPos);
+   
+        /*int a = ClosestFinger1D(keyPos, transformedFingerPositions);
+        int b = ClosestFinger2D(keyPos, transformedFingerPositions);
+        int c = ClosestFinger3D(keyPos, transformedFingerPositions);
+
+        return Mode(a, b, c);*/
+        
+
+        int a = ClosestFinger1D(keyPos, transformedFingerPositions);
+        int b = ClosestFinger2D(keyPos, transformedFingerPositions);
+        int c = ClosestFinger3D(keyPos, transformedFingerPositions);
+        Vector3 keyPos_P3 = getMidPositionFromKey(key, heightMode:0, forwardMode:3);
+        keyPos_P3 = _m.MultiplyPoint(keyPos_P3);
+
+
+        int blackKeyPoint = ClosestFinger3D(keyPos_P3, transformedFingerPositions);
+        if (blackKeys.Contains(key % 12)) return blackKeyPoint;
+        else return Mode(a, b, c);
+
+        //return ClosestFinger1D(keyPos, transformedFingerPositions);
+    }
+    public static int Mode(int a, int b, int c)
+    {
+        return (a == b || a == c) ? a : (b == c ? b : c);
+    }
+
+    public TestingData AddToTestingData(int key)
+    {
+        Vector3[] BoneTranslations = _dataProvider.GetHandFrameData().BoneTranslations;
+
+        Vector3[] fingertipPositions = new Vector3[5]
+        {
+            BoneTranslations[(int)OVRHandData.ovrHandEnum.ThumbTip],
+            BoneTranslations[(int)OVRHandData.ovrHandEnum.IndexTip],
+            BoneTranslations[(int)OVRHandData.ovrHandEnum.MiddleTip],
+            BoneTranslations[(int)OVRHandData.ovrHandEnum.RingTip],
+            BoneTranslations[(int)OVRHandData.ovrHandEnum.LittleTip]
+        };
+
+        int anchorKey = _config.anchorKey;
+        Vector3[] transformedFingerPositions = new Vector3[5];
+
+        for (int i = 0; i < fingertipPositions.Length; i++) 
+        {
+            transformedFingerPositions[i] = _m.MultiplyPoint(fingertipPositions[i]);
+        }
+
+        Vector3 keyPos_P0 = getMidPositionFromKey(key, heightMode:0, forwardMode:0);
+        Vector3 keyPos_P1 = getMidPositionFromKey(key, heightMode:0, forwardMode:1);
+        Vector3 keyPos_P2 = getMidPositionFromKey(key, heightMode:0, forwardMode:2);
+        Vector3 keyPos_P3 = getMidPositionFromKey(key, heightMode:0, forwardMode:3);
+        
+        keyPos_P0 = _m.MultiplyPoint(keyPos_P0);
+        keyPos_P1 = _m.MultiplyPoint(keyPos_P1);
+        keyPos_P2 = _m.MultiplyPoint(keyPos_P2);
+        keyPos_P3 = _m.MultiplyPoint(keyPos_P3);
+        
+        _testingData.test_1D.Add(ClosestFinger1D(keyPos_P0, transformedFingerPositions));
+        _testingData.test_2D.Add(ClosestFinger2D(keyPos_P0, transformedFingerPositions));
+        _testingData.test_3D.Add(ClosestFinger3D(keyPos_P0, transformedFingerPositions));
+        _testingData.test_2D_Manhattan.Add(ClosestFinger2DManhattan(keyPos_P0, transformedFingerPositions));
+        _testingData.test_3D_Manhattan.Add(ClosestFinger3DManhattan(keyPos_P0, transformedFingerPositions));
+        _testingData.test_3D_P1.Add(ClosestFinger3D(keyPos_P1, transformedFingerPositions));
+        _testingData.test_3D_P2.Add(ClosestFinger3D(keyPos_P2, transformedFingerPositions));
+        _testingData.test_3D_P3.Add(ClosestFinger3D(keyPos_P3, transformedFingerPositions));
+    
+        // comb test case. always use 3D for black keys.
+        // choose the majority of 1D, 2D and 3D. if no majority, choose 3D.
+        int a = ClosestFinger1D(keyPos_P0, transformedFingerPositions);
+        int b = ClosestFinger2D(keyPos_P0, transformedFingerPositions);
+        int c = ClosestFinger3D(keyPos_P0, transformedFingerPositions);
+        int blackKeyPoint = ClosestFinger3D(keyPos_P3, transformedFingerPositions);
+        //_testingData.test_comb1.Add(Mode(a, b, c));
+        if (blackKeys.Contains(key % 12))_testingData.test_comb1.Add(blackKeyPoint);
+        else _testingData.test_comb1.Add(Mode(a, b, c));
+        
+
+        return _testingData;
+    }
+
     // when we transform into keyboard space, the keyboard keys goes along the X axis, the forward vector will go into the Z axis, and up is Y.
     // When doing 1D check we don't care about Z and Y so we can ignore them. And only check which finger pos is closest to X.
     public static int ClosestFinger1D(Vector3 target, Vector3[] tipPositions)
     {
         return Array.IndexOf(tipPositions, tipPositions.OrderBy(n => Math.Abs(n.x - target.x)).First());
+    }
+    public static int[] Get2ClosestFingers1D(Vector3 target, Vector3[] tipPositions)
+    {
+        return tipPositions
+            .Select((pos, index) => new { Position = pos, Index = index })
+            .OrderBy(p => Math.Abs(p.Position.x - target.x))
+            .Take(2)
+            .Select(p => p.Index)
+            .ToArray();
     }
     
     //using x and y, change to x and z ignore up dimension instead
@@ -217,7 +358,7 @@ public class HandUtil : MonoBehaviour
         scalePos += (_config.forwardVector * approxWhiteKeyLength) * forwardMode * pointMult;
         
         // Offsets the point down a little but, it could simulate the key being pushed down
-        if (heightMode == 1) scalePos += Vector3.down * approxWhiteKeyLength * 0.5f;
+        if (heightMode == 1) scalePos += Vector3.up * approxWhiteKeyLength * 0.5f;
 
         return scalePos + octaveOffsetFromAnchor + _config.anchor;
     }

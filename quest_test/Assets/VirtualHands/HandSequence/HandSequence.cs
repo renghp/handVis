@@ -77,7 +77,6 @@ public class HandSequence : ScriptableObject
           
           public bool IsDataHighConfidence;
           
-          // This data is not correctly mapped, use: OVRExtensions.FromFlippedZVector3f
           public Vector3[] BoneTranslations;
           
           public int SkeletonChangedCount;
@@ -89,7 +88,25 @@ public class HandSequence : ScriptableObject
           //public Vector3 getTransformedTranslation(int i){
           //     return OVRExtensions.FromFlippedZVector3f(new OVRPlugin.Vector3f{x = BoneTranslations[i].x, y = BoneTranslations[i].y, z = BoneTranslations[i].z});
           //}
-
+          
+          public void SetRotationFromTranslation(){
+               
+               this.BoneRotations = new Quaternion[this.BoneTranslations.Length];
+               for (int i = 0; i < this.BoneTranslations.Length; i++)
+               {
+                    if(OVRHandData.hasParent.Contains(i)){
+                         Vector3 thisPos = this.BoneTranslations[i];
+                         Vector3 parentPos = this.BoneTranslations[(int)OVRHandData.jointsCustom[i].Parent];
+                         this.BoneRotations[i] = getBoneRotation(thisPos, parentPos);
+                    }
+                    else if(OVRHandData.hasParentWrist.Contains(i)){
+                         Vector3 thisPos = this.BoneTranslations[i];
+                         Vector3 parentPos = this.BoneTranslations[1];//1 -> index for wrist
+                         this.BoneRotations[i] = getBoneRotation(thisPos, parentPos);
+                    }
+               }
+               
+          }
           public static explicit operator OVRSkeleton.SkeletonPoseData(HandFrame obj)
           {
                OVRSkeleton.SkeletonPoseData output = new OVRSkeleton.SkeletonPoseData();
@@ -268,10 +285,6 @@ public class HandSequence : ScriptableObject
 
                return copiedFrame;
           }
-
-
-
-
      }
 
      [Serializable]
