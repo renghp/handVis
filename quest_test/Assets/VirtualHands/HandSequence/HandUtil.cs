@@ -35,7 +35,7 @@ public class HandUtil : MonoBehaviour
         use2DMa,
         use3DMa
     }
-    
+
     public class TestingData
     {
         public List<int> test_1D;
@@ -47,6 +47,9 @@ public class HandUtil : MonoBehaviour
         public List<int> test_3D_P2;
         public List<int> test_3D_P3;
         public List<int> test_comb1;
+        public List<int> test_comb2;
+        public List<int> test_1Dcomb;
+        public List<int> test_filter;
         
         public TestingData()
         {
@@ -59,6 +62,9 @@ public class HandUtil : MonoBehaviour
             test_3D_P2 = new List<int>();
             test_3D_P3 = new List<int>();
             test_comb1 = new List<int>();
+            test_comb2 = new List<int>();
+            test_1Dcomb = new List<int>();
+            test_filter = new List<int>();
         }
     }
     private TestingData _testingData;
@@ -208,10 +214,16 @@ public class HandUtil : MonoBehaviour
         Vector3 keyPos_P3 = getMidPositionFromKey(key, heightMode:0, forwardMode:3);
         keyPos_P3 = _m.MultiplyPoint(keyPos_P3);
 
-
+        /*
         int blackKeyPoint = ClosestFinger3D(keyPos_P3, transformedFingerPositions);
         if (blackKeys.Contains(key % 12)) return blackKeyPoint;
         else return Mode(a, b, c);
+        */
+        
+        //Filtered
+        List<int> filteredPoints = FilterPoints(transformedFingerPositions, keyPos, blackKeys.Contains(key % 12), 0.1f);
+        if (filteredPoints.Count != 0) return ClosestFinger1D(keyPos, transformedFingerPositions, filteredPoints);
+        else return c;
 
         //return ClosestFinger1D(keyPos, transformedFingerPositions);
     }
@@ -270,15 +282,50 @@ public class HandUtil : MonoBehaviour
         if (blackKeys.Contains(key % 12))_testingData.test_comb1.Add(blackKeyPoint);
         else _testingData.test_comb1.Add(Mode(a, b, c));
         
+        // comb2 is just regular MODE
+        _testingData.test_comb2.Add(Mode(a, b, c));
+        
+        //1D simple filter, pick first 1d if no other comes close otherwise do MODE
+        int[] twoClosests1Dpoints =  Get2ClosestFingers1D(keyPos_P0, transformedFingerPositions);
+        float first_error = transformedFingerPositions[twoClosests1Dpoints[0]].x - keyPos_P0.x; 
+        float second_error = transformedFingerPositions[twoClosests1Dpoints[1]].x - keyPos_P0.x;
+        float keySize = _config.oneKeyVector.magnitude;
+
+        if (first_error < keySize / 2.0f && second_error > keySize / 2.0f) _testingData.test_1Dcomb.Add(twoClosests1Dpoints[0]);
+        else _testingData.test_1Dcomb.Add(Mode(a, b, c));
+        
+        //Filtered
+        List<int> filteredPoints = FilterPoints(transformedFingerPositions, keyPos_P0, blackKeys.Contains(key % 12), 0.1f);
+        if(filteredPoints.Count != 0) _testingData.test_filter.Add(ClosestFinger1D(keyPos_P0, transformedFingerPositions, filteredPoints));
+        else _testingData.test_filter.Add(c);
 
         return _testingData;
     }
 
+    List<int> FilterPoints(Vector3[] points, Vector3 target, bool isBlackKey, float epsilon)
+    {
+        float keySize = _config.oneKeyVector.magnitude;
+        List<int> remainingPoints = new List<int>();
+        for (int i = 0; i < points.Length; i++)
+        {
+            float errorX = points[i].x - target.x;
+            float errorZ = points[i].z - target.z;
+            float errorY = points[i].y - target.y;
+            if (errorX > keySize / 2.0f) continue; // if finger is outside key
+            if (errorZ < 0.0f - epsilon || errorZ > keySize * 3.0f) continue; // if finger is infront of key too much the other way
+            if (errorY > keySize) continue;
+            remainingPoints.Add(i);
+        }
+
+        return remainingPoints;
+    }
+
     // when we transform into keyboard space, the keyboard keys goes along the X axis, the forward vector will go into the Z axis, and up is Y.
     // When doing 1D check we don't care about Z and Y so we can ignore them. And only check which finger pos is closest to X.
-    public static int ClosestFinger1D(Vector3 target, Vector3[] tipPositions)
+    public static int ClosestFinger1D(Vector3 target, Vector3[] tipPositions, List<int> filterMask = null)
     {
-        return Array.IndexOf(tipPositions, tipPositions.OrderBy(n => Math.Abs(n.x - target.x)).First());
+        if (filterMask == null) return Array.IndexOf(tipPositions, tipPositions.OrderBy(n => Math.Abs(n.x - target.x)).First());
+        return filterMask.OrderBy(i => Math.Abs(tipPositions[i].x - target.x)).First();
     }
     public static int[] Get2ClosestFingers1D(Vector3 target, Vector3[] tipPositions)
     {

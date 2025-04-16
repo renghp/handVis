@@ -105,7 +105,7 @@ public class FingerMappingTest : MonoBehaviour
         string filePath = "Assets/VirtualHands/fingerLogs/" + logFileName + ".csv";
         using (StreamWriter writer = new StreamWriter(filePath))
         {
-            writer.WriteLine("test_1D,test_2D,test_3D,test_2D_Manhattan,test_3D_Manhattan,test_3D_P1,test_3D_P2,test_3D_P3,test_comb1");
+            writer.WriteLine("test_1D,test_2D,test_3D,test_2D_Manhattan,test_3D_Manhattan,test_3D_P1,test_3D_P2,test_3D_P3,test_comb1,test_comb2,test_1Dcomb,test_filter");
             
             // find the maximum length of the lists (all should be the same)
             int maxLength = new List<int>
@@ -118,7 +118,10 @@ public class FingerMappingTest : MonoBehaviour
                 data.test_3D_P1.Count,
                 data.test_3D_P2.Count,
                 data.test_3D_P3.Count,
-                data.test_comb1.Count
+                data.test_comb1.Count,
+                data.test_comb2.Count,
+                data.test_1Dcomb.Count,
+                data.test_filter.Count,
             }.Max();
             
             // Write data rows
@@ -127,7 +130,7 @@ public class FingerMappingTest : MonoBehaviour
                 writer.WriteLine(
                     $"{GetValue(data.test_1D, i)},{GetValue(data.test_2D, i)},{GetValue(data.test_3D, i)}," +
                     $"{GetValue(data.test_2D_Manhattan, i)},{GetValue(data.test_3D_Manhattan, i)},{GetValue(data.test_3D_P1, i)}," +
-                    $"{GetValue(data.test_3D_P2, i)},{GetValue(data.test_3D_P3, i)},{GetValue(data.test_comb1, i)}"
+                    $"{GetValue(data.test_3D_P2, i)},{GetValue(data.test_3D_P3, i)},{GetValue(data.test_comb1, i)},{GetValue(data.test_comb2, i)},{GetValue(data.test_1Dcomb, i)},{GetValue(data.test_filter, i)}"
                 );
             }
         }
