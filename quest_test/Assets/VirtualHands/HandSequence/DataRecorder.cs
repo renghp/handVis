@@ -47,7 +47,15 @@ public class DataRecorder :  MonoBehaviour
     [SerializeField]
     private string _fileName;
     
-
+    private ConfigurePhysicalKeyboard _config;
+    
+    public GameObject progressBarPrefab;
+    private GameObject _progressBarGO;
+    private progressbar _progressBar;
+    
+    [SerializeField]
+    private GameObject _playbackGo;
+    
     private void RecordCurrentFrame()
     {
         HandSequence.HandFrame data = _dataProvider.GetHandFrameData();
@@ -85,12 +93,46 @@ public class DataRecorder :  MonoBehaviour
         if (_isRecording) {
             RecordCurrentFrame();
         }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            if(_hasRecording) ExportFiles();
+            StartCoroutine(WaitForExportSave());
+
+        }  
+        
     }
+
+    IEnumerator WaitForExportSave()
+    {
+        yield return new WaitForSeconds(3.0f);
+        _playbackGo.SetActive(true);
+        SkeletonPlayback pb = _playbackGo.GetComponent<SkeletonPlayback>();
+        pb.OverrideMainSequence(_handSequenceRecordings[0]);
+        gameObject.SetActive(false);
+    }
+
+    private IEnumerator SlowUpdate()
+    {
+        while (true)
+        {
+            if (_isRecording) {
+                UpdateProgressBar();
+            }
+            
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
     void Start()
     {
         _isRecording = false;
         _currentRecording = 0;
         _handSequenceRecordings = new List<HandSequence>();
+
+        SearchConfig();
+        _config.OnKeyboardInputdeviceKeyPressed += KeyboardInput;
+
+        StartCoroutine(SlowUpdate());
         
         if (_dataProvider == null)
         {
@@ -122,6 +164,71 @@ public class DataRecorder :  MonoBehaviour
         }
     }
 
+    private void KeyboardInput(List<int> inputList)
+    {
+        int input = inputList[0];
+
+        switch (input)
+        {
+            case 0: // play/stop key pressed
+                if (!_isRecording)
+                {
+                    //start new recording
+                    _startTime = Time.time;
+                    _hasRecording = true;
+                    _handSequenceRecordings.Add(ScriptableObject.CreateInstance<HandSequence>());
+                    Debug.Log(" * RECORDING STARTED *");
+                    CreateProgressBar(_config.activeConfig);
+
+                }
+                else
+                {
+                    //Stop recording
+                    Debug.Log(" * RECORDING STOPPED *");
+                    DestroyProgressBar();
+                    _currentRecording += 1;
+                }
+
+                _isRecording = !_isRecording;
+                
+                break;
+            case 1:
+                break;
+            default:
+                break;
+        }
+    }
+    
+    void CreateProgressBar(ConfigurePhysicalKeyboard.Config config)
+    {
+        //Vector3 position = config.anchor + config.deltaVec * config.keyboardSurfaceLength / 2.0f;
+        Vector3 position = (config.anchor + config.deltaVec * config.keyboardSurfaceLength / 2.0f) +
+                           Vector3.Normalize(config.forwardVector) * (config.keyboardSurfaceLength / 3.0f) +
+                           Vector3.up * (config.keyboardSurfaceLength / 3.0f);
+        _progressBarGO = Instantiate(progressBarPrefab, position, Quaternion.LookRotation(-config.deltaVec, Vector3.up), transform);
+        _progressBar = _progressBarGO.transform.Find("inner")?.gameObject.GetComponent<progressbar>();
+        _progressBar.Inititalize();
+        
+        _progressBar.SetTextLeft("Recording \ud83d\udd34");
+        _progressBar.SetTextRight("00:00:00");
+    }
+    private void DestroyProgressBar()
+    {
+        Destroy(_progressBarGO);
+    }
+
+    private void UpdateProgressBar()
+    {
+        float elapsed = Time.time - _startTime; 
+
+        int minutes = (int)(elapsed / 60);
+        int seconds = (int)(elapsed % 60);
+        int milliseconds = (int)((elapsed * 100) % 100);
+
+        string timeFormatted = $"{minutes:00}:{seconds:00}:{milliseconds:00}";
+        _progressBar.SetTextRight(timeFormatted);
+    }
+
     void OnApplicationQuit()
     {
         Debug.Log("application quit");
@@ -147,9 +254,22 @@ public class DataRecorder :  MonoBehaviour
         foreach (var handSequence in _handSequenceRecordings)
         {
             string filename = _fileName + "(" + nr + ")";
+            
+            /*
+             * NullReferenceException: Object reference not set to an instance of an object
+HandSequence.setRotationsFromTranslations () (at Assets/VirtualHands/HandSequence/HandSequence.cs:48)
+HandSequence.applyTransformation (UnityEngine.Matrix4x4 transformationMatrix) (at Assets/VirtualHands/HandSequence/HandSequence.cs:43)
+DataRecorder.ExportFiles () (at Assets/VirtualHands/HandSequence/DataRecorder.cs:142)
+DataRecorder.OnApplicationQuit () (at Assets/VirtualHands/HandSequence/DataRecorder.cs:128)
+
+             */
             HandSequenceExporter.Export(handSequence, filename, _saveLocation);
             nr++;
         }
+    }
+
+    private void SwitchToPlaybackMode()
+    {
     }
 
     internal HandSequence.SkeletonHandSequenceProvider SearchSkeletonDataProvider()
@@ -175,6 +295,15 @@ public class DataRecorder :  MonoBehaviour
         }
 
         return null;
+    }
+    void SearchConfig(){
+        if(_config == null) {
+            var configGO = GameObject.Find("KeyboardConfiguration");
+            var config = configGO ? configGO.GetComponent<ConfigurePhysicalKeyboard>() : null;
+            if(config != null){
+                _config = config;
+            }else{Debug.LogError("No config found");}
+        }
     }
 
     // public void OnValidate()
