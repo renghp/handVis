@@ -98,6 +98,7 @@ public class ConfigurePhysicalKeyboard : MonoBehaviour
     
     
     
+    
     void Start()
     {
 
@@ -179,6 +180,11 @@ public class ConfigurePhysicalKeyboard : MonoBehaviour
          yield return null;
     }
 
+    public void ForceConfigUpdate()
+    {
+        updateConfig();
+    }
+
 
     private IEnumerator updateConfig(){
         Vector3 a = LeftConfigSphere.transform.position;
@@ -189,8 +195,7 @@ public class ConfigurePhysicalKeyboard : MonoBehaviour
         Vector3 _forwardVector = Vector3.Normalize(-Vector3.Cross(Vector3.up, delta)) * delta.magnitude  / _guideLineRender.numKeys;
         //_lr.SetPosition(0, currentPos);
         Vector3 startPos = a + (realDelta * _guideLineRender.offset/2);
-
-
+        
         int leftKey_temp = startKey;
         int rightKey_temp = endKey;
         Vector3 leftCornerPosition_temp = startPos;
