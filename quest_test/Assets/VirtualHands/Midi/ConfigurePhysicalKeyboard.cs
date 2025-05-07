@@ -41,10 +41,11 @@ public class ConfigurePhysicalKeyboard : MonoBehaviour
     public int startKey = 48; // E4
     public int endKey = 76; // C2
     public int configKey = 28; // leftmost key
-    public int pausePlayKey = 29;
-    public int increaseSpeedKey = 33;
+    public int stopPlayKey = 29;
+    public int increaseSpeedKey = 35;
     public int decreaseSpeedKey = 31;
-    
+    public int pauseKey = 33;
+    public int slowMoKey = 36;
     
     private static List<int> whiteKeys = new List<int> { 0, 2, 4, 5, 7, 9, 11 };
     private static List<int> blackKeys = new List<int> { 1, 3, 6, 8, 10 };
@@ -133,6 +134,11 @@ public class ConfigurePhysicalKeyboard : MonoBehaviour
         }
     }
 
+    public bool IsKeyDown(int key)
+    {
+        return _device.notesDown.Contains(key);
+    }
+
     void NoteChanged(NoteEvent n){
         if(_device.notesDown.Contains(configKey)){
             Debug.Log("config key pressed");
@@ -154,7 +160,7 @@ public class ConfigurePhysicalKeyboard : MonoBehaviour
 
         List<int> inputlist = new List<int>();
         
-        if (_device.notesDown.Contains(pausePlayKey))
+        if (_device.notesDown.Contains(stopPlayKey))
         {
             Debug.Log("Playkey pressed inside config");
             inputlist.Add(0);
@@ -166,6 +172,14 @@ public class ConfigurePhysicalKeyboard : MonoBehaviour
         if (_device.notesDown.Contains(decreaseSpeedKey))
         {
             inputlist.Add(2);
+        }
+        if (_device.notesDown.Contains(pauseKey))
+        {
+            inputlist.Add(3);
+        }
+        if (_device.notesDown.Contains(slowMoKey))
+        {
+            inputlist.Add(4);
         }
         Debug.Log("input list count: " + inputlist.Count);
         

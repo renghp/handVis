@@ -42,7 +42,7 @@ public class RenderGuideLine : MonoBehaviour
         _forwardVector = Vector3.Normalize(-Vector3.Cross(Vector3.up, sphere1pos - sphere2pos)) * insetLength;
 
         _lr = GetComponent<LineRenderer>();
-        _defaultMaterial.SetColor("_Color", _lr.startColor);
+        _defaultMaterial.SetColor("_BaseColor", Color.red);
 
         if (_lr == null)
         {

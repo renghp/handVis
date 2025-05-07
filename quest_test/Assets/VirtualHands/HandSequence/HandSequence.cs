@@ -34,6 +34,7 @@ public class HandSequence : ScriptableObject
      public void applyTransformation(Matrix4x4 transformationMatrix){
           foreach(var frame in frames)
           {
+               if(!frame.IsDataValid) continue;
                for (int i = 0; i < frame.BoneTranslations.Length; i++)
                {
                     frame.BoneTranslations[i] = transformationMatrix.MultiplyPoint(frame.BoneTranslations[i]);
@@ -43,7 +44,9 @@ public class HandSequence : ScriptableObject
      }
 
      public void setRotationsFromTranslations(){
-          foreach(var frame in frames){
+          foreach(var frame in frames)
+          {
+               if (!frame.IsDataValid) continue;
                frame.BoneRotations = new Quaternion[frame.BoneTranslations.Length];
                for (int i = 0; i < frame.BoneTranslations.Length; i++)
                {
@@ -146,8 +149,7 @@ public class HandSequence : ScriptableObject
                HandFrame output = new HandFrame();
 
                if(!obj.IsDataValid || !obj.IsDataHighConfidence){
-                    output.IsDataValid = obj.IsDataValid;
-                    output.IsDataHighConfidence = obj.IsDataHighConfidence;
+                    output.IsDataValid = false;
                     return output;
                }
 
@@ -204,22 +206,57 @@ public class HandSequence : ScriptableObject
 
           public override string ToString()
           {
-               string logLine = RootPose.ToString("F10"); // 7
-               logLine += "," + RootScale.ToString("F6");
-            
-               for(int i = 0; i < BoneRotations.Length; i++){ // 4*26
-                    logLine += "," + BoneRotations[i].ToString("F10");
+               string logLine = "";
+               if(IsDataValid) logLine += RootPose.ToString("F10"); // 7
+               else
+               {
+                    posef empty = new posef();
+                    logLine += empty.ToString("F10");
                }
+
+               if (IsDataValid) logLine += "," + RootScale.ToString("F6");
+               else logLine += 0.0;
+
+               
+               if (IsDataValid)
+               {
+                    for(int i = 0; i < BoneRotations.Length; i++){ // 4*26
+                         logLine += "," + BoneRotations[i].ToString("F10");
+                    }  
+               }
+               else
+               {
+                    for (int i = 0; i < 4 * 26; i++) // Fill with 4 floats per bone
+                    {
+                         logLine += ",0.0";
+                    }
+               }
+
+               
 
                logLine += "," + (IsDataValid ? "1" : "0");  // 1
                logLine += "," + (IsDataHighConfidence ? "1" : "0"); // 1
 
-               for(int i = 0; i < BoneTranslations.Length; i++){ // 3*26
-                    logLine += "," + BoneTranslations[i].ToString("F6");
+               if (IsDataValid) {
+                    for (int i = 0; i < BoneTranslations.Length; i++) // 3*26
+                    {
+                         logLine += "," + BoneTranslations[i].ToString("F6");
+                    }
+               }
+               else {
+                    for (int i = 0; i < 3 * 26; i++) // Fill with 3 floats per bone
+                    {
+                         logLine += ",0.0";
+                    }
                }
 
-               logLine += "," + SkeletonChangedCount.ToString(); // 1
-               
+               if (IsDataValid)
+               {
+                    logLine += "," + SkeletonChangedCount.ToString();
+               } // 1
+               else { logLine += "," + 0;}
+
+
                logLine += "," + time.ToString(); // 1
 
                // MIDI part of data

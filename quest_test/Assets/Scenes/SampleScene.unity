@@ -417,6 +417,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2125095795}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &349748255 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8157698343606593442, guid: 99056047d9acfd64ab4cf2461b9e0aca,
+    type: 3}
+  m_PrefabInstance: {fileID: 6104243676935470938}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &368020049 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1870938896605422, guid: 835e735ca71bf78459fb2cababd74112,
@@ -2236,6 +2242,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6382006973435416462, guid: 4a86053e20dcc8641b7614bbd2a4ff1b,
         type: 3}
+      propertyPath: m_Parameters.colorGradient.key1.b
+      value: 0.088679194
+      objectReference: {fileID: 0}
+    - target: {fileID: 6382006973435416462, guid: 4a86053e20dcc8641b7614bbd2a4ff1b,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key1.g
+      value: 0.088679194
+      objectReference: {fileID: 0}
+    - target: {fileID: 6382006973435416462, guid: 4a86053e20dcc8641b7614bbd2a4ff1b,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key1.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6382006973435416462, guid: 4a86053e20dcc8641b7614bbd2a4ff1b,
+        type: 3}
       propertyPath: m_Parameters.colorGradient.m_ColorSpace
       value: 0
       objectReference: {fileID: 0}
@@ -2410,18 +2431,29 @@ PrefabInstance:
     - target: {fileID: 2369785792102157585, guid: 10bdb93c8540e09458918e6069fd52f4,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5874509026318139697, guid: 10bdb93c8540e09458918e6069fd52f4,
         type: 3}
       propertyPath: _fileName
-      value: nodelayrec
+      value: recording1
       objectReference: {fileID: 0}
+    - target: {fileID: 5874509026318139697, guid: 10bdb93c8540e09458918e6069fd52f4,
+        type: 3}
+      propertyPath: _playbackGo
+      value: 
+      objectReference: {fileID: 349748255}
     - target: {fileID: 5874509026318139697, guid: 10bdb93c8540e09458918e6069fd52f4,
         type: 3}
       propertyPath: _skeletonType
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 5874509026318139697, guid: 10bdb93c8540e09458918e6069fd52f4,
+        type: 3}
+      propertyPath: progressBarPrefab
+      value: 
+      objectReference: {fileID: 8180707522254626348, guid: 0eeb50c61da4c174391002c096f8c439,
+        type: 3}
     - target: {fileID: 7003157795080306077, guid: 10bdb93c8540e09458918e6069fd52f4,
         type: 3}
       propertyPath: _skeletonType
@@ -2454,7 +2486,7 @@ PrefabInstance:
     - target: {fileID: 8157698343606593442, guid: 99056047d9acfd64ab4cf2461b9e0aca,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8226942260989090325, guid: 99056047d9acfd64ab4cf2461b9e0aca,
         type: 3}
