@@ -105,7 +105,7 @@ KeyboardVisualizer.KeyboardDataProvider
     private GameObject _progressBarGO;
     [CanBeNull] private progressbar _progressBar;
 
-    private bool _isPlaybackActive = false;
+    public bool _isPlaybackActive = false;
 
     private float _playbackMultiplier;
     public bool IsPlaybackActive
@@ -467,10 +467,9 @@ KeyboardVisualizer.KeyboardDataProvider
         isInitialized = _sequence.hasData();
 
         _config.OnKeyboardInputdeviceKeyPressed += KeyboardInput;
-        /*if (isInitialized)
-        {
-            StartPlayback();
-        }*/
+
+            StartPlayback();        //forcing playback to start without key input
+
         
     }
 
@@ -548,10 +547,7 @@ KeyboardVisualizer.KeyboardDataProvider
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            
-        }
+        
 
         if (_isPlaybackActive)
         {
