@@ -2164,7 +2164,12 @@ PrefabInstance:
     - target: {fileID: 5874509026318139697, guid: 10bdb93c8540e09458918e6069fd52f4,
         type: 3}
       propertyPath: _fileName
-      value: recording1
+      value: thisIsFine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5874509026318139697, guid: 10bdb93c8540e09458918e6069fd52f4,
+        type: 3}
+      propertyPath: recordMidi
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5874509026318139697, guid: 10bdb93c8540e09458918e6069fd52f4,
         type: 3}
@@ -2202,6 +2207,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4080136121806183643, guid: 99056047d9acfd64ab4cf2461b9e0aca,
         type: 3}
+      propertyPath: _importSequence
+      value: 
+      objectReference: {fileID: -4060129950355911849, guid: 89c936d758bdaba418860db07e9842b9,
+        type: 3}
+    - target: {fileID: 4080136121806183643, guid: 99056047d9acfd64ab4cf2461b9e0aca,
+        type: 3}
       propertyPath: _isPlaybackActive
       value: 0
       objectReference: {fileID: 0}
@@ -2234,7 +2245,7 @@ PrefabInstance:
     - target: {fileID: 8226942260989090325, guid: 99056047d9acfd64ab4cf2461b9e0aca,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.20126107
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8226942260989090325, guid: 99056047d9acfd64ab4cf2461b9e0aca,
         type: 3}
