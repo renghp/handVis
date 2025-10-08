@@ -108,8 +108,19 @@ public class DataRecorder :  MonoBehaviour
         _playbackGo.SetActive(true);
         SkeletonPlayback pb = _playbackGo.GetComponent<SkeletonPlayback>();
         pb.OverrideMainSequence(_handSequenceRecordings[0]);
+
+        //StartCoroutine(WaitToChangeScene());
         gameObject.SetActive(false);
     }
+
+   /* IEnumerator WaitToChangeScene()
+    {
+        yield return new WaitForSeconds(3.0f);
+        _playbackGo.SetActive(true);
+        //SkeletonPlayback pb = _playbackGo.GetComponent<SkeletonPlayback>();
+        //pb.OverrideMainSequence(_handSequenceRecordings[0]);
+        gameObject.SetActive(false);
+    }*/
 
     private IEnumerator SlowUpdate()
     {

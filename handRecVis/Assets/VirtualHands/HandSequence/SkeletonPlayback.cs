@@ -15,6 +15,7 @@ using UnityEditorInternal;
 
 
 
+
 /// <summary>
 /// Provides playback of handsequence.
 /// Use by adding this together with a renderer.
@@ -453,6 +454,7 @@ KeyboardVisualizer.KeyboardDataProvider
     }
     
 
+
     void Start()
     {
         SearchConfig();
@@ -468,7 +470,7 @@ KeyboardVisualizer.KeyboardDataProvider
 
         _config.OnKeyboardInputdeviceKeyPressed += KeyboardInput;
 
-            StartPlayback();        //forcing playback to start without key input
+        StartPlayback();        //forcing playback to start without key input
 
         
     }
@@ -484,6 +486,9 @@ KeyboardVisualizer.KeyboardDataProvider
 
         isInitialized = _sequence.hasData();
         Debug.Log("Override complete");
+
+        StartPlayback();
+
     }
 
     void KeyboardInput(List<int> inputList)
