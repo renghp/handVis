@@ -72,8 +72,10 @@ public class SkeletonRenderer : MonoBehaviour
             boneGO.transform.SetParent(_handGO.transform, true);
 
             _material = new Material(Shader.Find("Universal Render Pipeline/Lit"));   
-            _material.color = OVRHandData.jointsCustom[index].Color;
+            //_material.color = OVRHandData.jointsCustom[index].Color;
+            _material.color = Color.gray;
             boneGO.GetComponent<Renderer>().material = _material;
+            jointGO.GetComponent<Renderer>().material = _material;
 
             float bone_length = 1.0f;
             if (parent != null) {
@@ -81,7 +83,7 @@ public class SkeletonRenderer : MonoBehaviour
                 bone_length = _delta.magnitude;
             }
             
-            boneGO.transform.localScale = new Vector3(0.002f, bone_length/2, 0.002f);
+            boneGO.transform.localScale = new Vector3(0.015f, bone_length/2, 0.015f);
         }
 
         public void Update()
