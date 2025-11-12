@@ -2964,7 +2964,7 @@ PrefabInstance:
     - target: {fileID: 8157698343606593442, guid: 99056047d9acfd64ab4cf2461b9e0aca,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8226942260989090325, guid: 99056047d9acfd64ab4cf2461b9e0aca,
         type: 3}
@@ -20902,7 +20902,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _importSequence
       value: 
-      objectReference: {fileID: -4060129950355911849, guid: 2e2820cb6f09d8a458505bf90297faff,
+      objectReference: {fileID: -4060129950355911849, guid: 023e9c0b64dee9745b10eb6326d86e12,
         type: 3}
     - target: {fileID: 4080136121806183643, guid: 99056047d9acfd64ab4cf2461b9e0aca,
         type: 3}

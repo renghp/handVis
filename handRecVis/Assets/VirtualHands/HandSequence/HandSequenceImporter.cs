@@ -33,9 +33,11 @@ using Melanchall.DryWetMidi.Standards;
 [ScriptedImporter(1, new string[] { "hseq" })]
 public class HandSequenceImporter : ScriptedImporter {
     public override void OnImportAsset(UnityEditor.AssetImporters.AssetImportContext ctx) {
-        using (var file = new FileStream(ctx.assetPath, FileMode.Open, FileAccess.Read))
+        using (var file = new FileStream(Application.persistentDataPath, FileMode.Open, FileAccess.Read))
         using (var reader = new StreamReader(file)) {
             float fileLength = file.Length;
+
+            Debug.Log("############importing now#################");
 
             HandSequence handSequence = ScriptableObject.CreateInstance<HandSequence>();
             
