@@ -37,6 +37,10 @@ public class DataRecorder :  MonoBehaviour
 
     private bool _hasRecording;
 
+    private bool _machineOn = true;
+
+    public GameObject machine;
+
     private List<HandSequence> _handSequenceRecordings;
 
     public bool recordMidi;
@@ -68,10 +72,55 @@ public class DataRecorder :  MonoBehaviour
         _handSequenceRecordings[_currentRecording].frames.Add(data);
     }
 
+    public void StartRecording()
+    {
+         Debug.Log("poked record");
+
+            if (!_isRecording)
+            {
+                //start new recording
+                _startTime = Time.time;
+                _hasRecording = true;
+                _handSequenceRecordings.Add(ScriptableObject.CreateInstance<HandSequence>());
+                Debug.Log(" * RECORDING STARTED *");
+            }
+            else
+            {
+                //Stop recording
+                Debug.Log(" * RECORDING STOPPED *");
+                _currentRecording += 1;
+            }
+
+            _isRecording = !_isRecording;
+
+    }
+
+    public void SavePlayback()
+    {
+         Debug.Log("poked save");
+
+            if(_hasRecording) ExportFiles();
+            StartCoroutine(WaitForExportSave());
+
+    }
+
+    public void TurnOnOffMachine()
+    {
+         Debug.Log("poked machine");
+
+         machine.SetActive(!_machineOn);
+         _machineOn = !_machineOn;
+
+    }
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+
+
+        if (Input.GetKeyDown(KeyCode.R) || OVRInput.GetDown(OVRInput.RawButton.X))
         {
+             Debug.Log("pressed R or VR.A");
+
             if (!_isRecording)
             {
                 //start new recording
@@ -93,7 +142,7 @@ public class DataRecorder :  MonoBehaviour
         if (_isRecording) {
             RecordCurrentFrame();
         }
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.S) || OVRInput.GetDown(OVRInput.RawButton.Y))
         {
             if(_hasRecording) ExportFiles();
             StartCoroutine(WaitForExportSave());
