@@ -134,6 +134,9 @@ public class DataRecorder :  MonoBehaviour
                 //Stop recording
                 Debug.Log(" * RECORDING STOPPED *");
                 _currentRecording += 1;
+
+                if(_hasRecording) ExportFiles();
+                StartCoroutine(WaitForExportSave());
             }
 
             _isRecording = !_isRecording;
@@ -313,7 +316,7 @@ public class DataRecorder :  MonoBehaviour
         int nr = 0;
         foreach (var handSequence in _handSequenceRecordings)
         {
-            string filename = _fileName + "(" + nr + ")";
+            string filename = _fileName;// + "(" + nr + ")";
             
             /*
              * NullReferenceException: Object reference not set to an instance of an object

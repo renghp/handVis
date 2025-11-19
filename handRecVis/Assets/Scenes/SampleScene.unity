@@ -1799,6 +1799,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 6104243676935470938}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &349748259 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4080136121806183643, guid: 99056047d9acfd64ab4cf2461b9e0aca,
+    type: 3}
+  m_PrefabInstance: {fileID: 6104243676935470938}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 349748255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 575cfd7e91a5b4a3683131265d674adc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &357345456
 GameObject:
   m_ObjectHideFlags: 0
@@ -2932,7 +2944,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _importSequence
       value: 
-      objectReference: {fileID: -4060129950355911849, guid: 3a745b62c7396be4f8744f12e1a100d7,
+      objectReference: {fileID: -4060129950355911849, guid: c51d413a8d5a82c4eb9417342e8fa59a,
         type: 3}
     - target: {fileID: 4080136121806183643, guid: 99056047d9acfd64ab4cf2461b9e0aca,
         type: 3}
@@ -2964,7 +2976,7 @@ PrefabInstance:
     - target: {fileID: 8157698343606593442, guid: 99056047d9acfd64ab4cf2461b9e0aca,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8226942260989090325, guid: 99056047d9acfd64ab4cf2461b9e0aca,
         type: 3}
@@ -5460,16 +5472,16 @@ MonoBehaviour:
   _whenSelect:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1918690174}
-        m_TargetAssemblyTypeName: DataRecorder, Assembly-CSharp
-        m_MethodName: SavePlayback
-        m_Mode: 1
+      - m_Target: {fileID: 349748259}
+        m_TargetAssemblyTypeName: SkeletonPlayback, Assembly-CSharp
+        m_MethodName: PlayNewSequence
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: recR.hseq
           m_BoolArgument: 0
         m_CallState: 2
   _whenUnselect:
@@ -10378,7 +10390,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: S
+  m_Text: N
 --- !u!222 &1368200820
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17471,7 +17483,7 @@ PrefabInstance:
     - target: {fileID: 5874509026318139697, guid: 10bdb93c8540e09458918e6069fd52f4,
         type: 3}
       propertyPath: _fileName
-      value: newestReplaceableR
+      value: recR
       objectReference: {fileID: 0}
     - target: {fileID: 5874509026318139697, guid: 10bdb93c8540e09458918e6069fd52f4,
         type: 3}
@@ -20902,7 +20914,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _importSequence
       value: 
-      objectReference: {fileID: -4060129950355911849, guid: 023e9c0b64dee9745b10eb6326d86e12,
+      objectReference: {fileID: -4060129950355911849, guid: cc05b19dfc3fe1e4a862938a193976a1,
         type: 3}
     - target: {fileID: 4080136121806183643, guid: 99056047d9acfd64ab4cf2461b9e0aca,
         type: 3}

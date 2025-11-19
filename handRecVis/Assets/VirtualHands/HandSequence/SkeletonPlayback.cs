@@ -11,6 +11,11 @@ using Melanchall.DryWetMidi.Multimedia;
 using Melanchall.DryWetMidi.Standards;
 using Meta.XR.ImmersiveDebugger.UserInterface.Generic;
 using Unity.VisualScripting;
+using System.IO;
+
+using System.Linq;
+//using UnityEditor.AssetImporters;
+using UnityEditor;
 //using UnityEditorInternal;
 
 
@@ -475,6 +480,148 @@ KeyboardVisualizer.KeyboardDataProvider
         
     }
 
+    public void PlayNewSequence(string fileName)
+    {
+        SearchConfig();
+        _notesDown = new HashSet<int>();
+
+
+        _importSequence = readFile(fileName);
+
+
+        _sequence = _importSequence.DeepCopy();
+        _midiEventBuffer = new List<HandSequence.SerializableNoteEvent>();
+
+        //gets the time of the last frame
+        _recordingLength = _sequence.frames[_sequence.frames.Count - 1].time;
+        _framesAmount = _sequence.frames.Count;
+
+        isInitialized = _sequence.hasData();
+
+        _config.OnKeyboardInputdeviceKeyPressed += KeyboardInput;
+
+        StartPlayback();        //forcing playback to start without key input
+    }
+
+    HandSequence readFile(string fileName)
+    {
+
+        var file = new FileStream(Application.persistentDataPath + "/" + fileName, FileMode.Open, FileAccess.Read);
+        var reader = new StreamReader(file);
+        float fileLength = file.Length;
+
+        Debug.Log("############importing now#################");
+
+        _importSequence = ScriptableObject.CreateInstance<HandSequence>();
+        
+        //string info = $"Reading particle set file {Path.GetFileName(ctx.assetPath)}";
+        //EditorUtility.DisplayProgressBar("Importing Hand Sequence", info, 0);
+        int currentFrame = 0;
+
+        while (true)
+        {
+            string line = reader.ReadLine(); // Read a new line
+            if (line == null) break; // stop at end of file
+            
+
+            HandSequence.HandFrame frame = new HandSequence.HandFrame();
+
+            var element = line.Trim().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(float.Parse).ToArray();
+            HandSequence.posef tempRootPose = new HandSequence.posef();
+
+            
+            tempRootPose.Orientation.x = element[0];
+            tempRootPose.Orientation.y = element[1];
+            tempRootPose.Orientation.z = element[2];
+            tempRootPose.Orientation.w = element[3];
+            tempRootPose.Position.x = element[4];
+            tempRootPose.Position.y = element[5];
+            tempRootPose.Position.z = element[6];
+            frame.RootPose = tempRootPose;
+
+            frame.RootScale = element[7];
+            
+            int bones_amount = 26;
+            int start_index = 8;
+            frame.BoneRotations = new Quaternion[bones_amount]; 
+            for(int i = 0; i < bones_amount; i++){
+                frame.BoneRotations[i].x = element[start_index+i*4];
+                frame.BoneRotations[i].y = element[start_index+i*4+1];
+                frame.BoneRotations[i].z = element[start_index+i*4+2];
+                frame.BoneRotations[i].w = element[start_index+i*4+3];
+            }
+            int next_element = start_index + bones_amount*4;
+
+            frame.IsDataValid = element[next_element] == 1.0f;
+            frame.IsDataHighConfidence = element[next_element+1] == 1.0f;
+
+            start_index = next_element+2;
+            frame.BoneTranslations = new Vector3[bones_amount]; 
+            for(int i = 0; i < bones_amount; i++){
+                frame.BoneTranslations[i].x = element[start_index+i*3];
+                frame.BoneTranslations[i].y = element[start_index+i*3+1];
+                frame.BoneTranslations[i].z = element[start_index+i*3+2];
+            }
+            next_element = start_index + bones_amount*3;
+
+            frame.SkeletonChangedCount = (int)element[next_element];
+
+            frame.time = element[next_element + 1];
+
+            frame.HasMidi = element[next_element + 2] != 0f;
+            
+            if(frame.HasMidi){
+                frame.MidiData = new List<HandSequence.SerializableNoteEvent>();
+
+                next_element = next_element + 3;
+
+                int noteOnCount = (int)element[next_element];
+                next_element = next_element + 1;
+                for(int i = 0; i < noteOnCount; i++){
+                    int noteNumber = (int)element[next_element + i * 2];
+                    int noteVelocity = (int)element[next_element + i * 2 + 1];
+                    var n = new NoteOnEvent((SevenBitNumber)noteNumber, (SevenBitNumber)noteVelocity);
+                    HandSequence.SerializableNoteEvent serializable_n = new HandSequence.SerializableNoteEvent(n);
+                    frame.MidiData.Add(serializable_n);
+                }
+
+                int noteOffCount = (int)element[next_element + noteOnCount * 2 ];
+                next_element = next_element + noteOnCount * 2 + 1 ;
+                for(int i = 0; i < noteOffCount; i++){
+                    int noteNumber = (int)element[next_element + i * 2];
+                    int noteVelocity = (int)element[next_element + i * 2 + 1];
+                    var n = new NoteOffEvent((SevenBitNumber)noteNumber, (SevenBitNumber)noteVelocity);
+                    HandSequence.SerializableNoteEvent serializable_n = new HandSequence.SerializableNoteEvent(n);
+                    frame.MidiData.Add(serializable_n);
+                }
+            }
+
+            
+            Debug.Log(currentFrame);
+
+            _importSequence.frames.Add(frame);
+            //Debug.Log("new frame added");
+            //Debug.Log("time: " + frame.time);
+            //Debug.Log("example import: " + frame.BoneRotations[0].x);
+            
+            ++currentFrame;
+           /* if (currentFrame % 20 == 0) {
+                EditorUtility.DisplayProgressBar("Hand sequence Importer", info, file.Position / fileLength);
+            }*/
+            
+        }
+
+        return _importSequence;
+            
+           // ctx.AddObjectToAsset("Hand.Sequence", handSequence);
+          //  ctx.SetMainObject(handSequence);
+            
+          //  EditorUtility.ClearProgressBar();
+
+        
+        
+    }
+
     public void OverrideMainSequence(HandSequence s)
     {
         _sequence = s.DeepCopy();
@@ -552,6 +699,12 @@ KeyboardVisualizer.KeyboardDataProvider
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            PlayNewSequence("recR.hseq");
+        }
+
+
         
 
         if (_isPlaybackActive)

@@ -314,11 +314,11 @@ public class HandSequence : ScriptableObject
                this.BoneTranslations.CopyTo(copiedFrame.BoneTranslations, 0);
 
                copiedFrame.MidiData = new List<SerializableNoteEvent>();
-               foreach (var midiEvent in this.MidiData)
+               /*foreach (var midiEvent in this.MidiData)
                {
                     var copiedMidiEvent = new SerializableNoteEvent(midiEvent);
                     copiedFrame.MidiData.Add(copiedMidiEvent);
-               }
+               }*/
 
                return copiedFrame;
           }
