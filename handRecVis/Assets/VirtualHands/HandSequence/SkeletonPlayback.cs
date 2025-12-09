@@ -12,6 +12,7 @@ using Melanchall.DryWetMidi.Standards;
 using Meta.XR.ImmersiveDebugger.UserInterface.Generic;
 using Unity.VisualScripting;
 using System.IO;
+using UnityEngine.UI;
 
 using System.Linq;
 //using UnityEditor.AssetImporters;
@@ -49,6 +50,8 @@ KeyboardVisualizer.KeyboardDataProvider
     private float _lastUpdateTime;
     private float _progress;
     private int _framesAmount;
+
+    public Text debuggerLogger; 
 
     private enum PlaybackState
     {
@@ -506,7 +509,12 @@ KeyboardVisualizer.KeyboardDataProvider
     HandSequence readFile(string fileName)
     {
 
+
         var file = new FileStream(Application.persistentDataPath + "/" + fileName, FileMode.Open, FileAccess.Read);
+        
+       // debuggerLogger.text += "\n * READING * " + fileName + " from " + Application.persistentDataPath;
+  
+        
         var reader = new StreamReader(file);
         float fileLength = file.Length;
 

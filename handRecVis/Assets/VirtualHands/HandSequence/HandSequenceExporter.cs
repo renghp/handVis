@@ -8,7 +8,9 @@ public static class HandSequenceExporter
     {
         List<string> lines = new List<string>();
 
-        location = Application.persistentDataPath;      //now writing to: \AppData\LocalLow\kth\handRecVis_rec
+        //location = "/mnt/sdcard/Android/data";
+        
+        //Application.persistentDataPath;      //now writing to: \AppData\LocalLow\kth\handRecVis_rec
                                                         //need to read from "Application.persistentDataPath" as well
         
         for (int i = 0; i < obj.frames.Count; i++)
@@ -16,5 +18,7 @@ public static class HandSequenceExporter
             lines.Add(obj.frames[i].ToString());
         }
         File.WriteAllLines(location+"/"+filename+".hseq", lines);
+
+
     }
 }

@@ -1,8 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using System.IO;
 using System.Reflection;
+using UnityEngine.UI;
+using Meta.XR.MRUtilityKit;
 
 /// <summary>
 /// Importer for a OpenXR animated hand sequence, recorded from 
@@ -28,8 +31,10 @@ public class DataRecorder :  MonoBehaviour
     private HandSequence.SkeletonHandSequenceProvider _dataProvider;
     private MIDIDevice.MidiDataProvider _midiDataProvider;
 
-    [SerializeField]
     private string _saveLocation;
+
+    [SerializeField]
+    
 
     private bool _isRecording;
 
@@ -59,6 +64,10 @@ public class DataRecorder :  MonoBehaviour
     
     [SerializeField]
     private GameObject _playbackGo;
+
+    public Text debuggerLogger;
+
+    int nr = 0;
     
     private void RecordCurrentFrame()
     {
@@ -75,6 +84,7 @@ public class DataRecorder :  MonoBehaviour
     public void StartRecording()
     {
          Debug.Log("poked record");
+         
 
             if (!_isRecording)
             {
@@ -83,12 +93,17 @@ public class DataRecorder :  MonoBehaviour
                 _hasRecording = true;
                 _handSequenceRecordings.Add(ScriptableObject.CreateInstance<HandSequence>());
                 Debug.Log(" * RECORDING STARTED *");
+                debuggerLogger.text = "* RECORDING STARTED *";
             }
             else
             {
                 //Stop recording
                 Debug.Log(" * RECORDING STOPPED *");
+                debuggerLogger.text = "* RECORDING STOPPED *";
                 _currentRecording += 1;
+
+                ExportFiles();
+                StartCoroutine(WaitForExportSave());
             }
 
             _isRecording = !_isRecording;
@@ -97,10 +112,18 @@ public class DataRecorder :  MonoBehaviour
 
     public void SavePlayback()
     {
-         Debug.Log("poked save");
+         //   debuggerLogger.text += "\n * SAVING STARTED *";
 
-            if(_hasRecording) ExportFiles();
+            //if(_hasRecording) 
+            ExportFiles();
+
+         //   debuggerLogger.text += "\n * will do coroutine*";
+
             StartCoroutine(WaitForExportSave());
+
+         //   debuggerLogger.text += "\n * coroutine STARTED *";
+
+            //debuggerLogger.text = " * COROUTINE STARTED *";
 
     }
 
@@ -156,13 +179,29 @@ public class DataRecorder :  MonoBehaviour
 
     IEnumerator WaitForExportSave()
     {
+       // debuggerLogger.text += "\n * WAITFOREXPORT STARTED *";
+
         yield return new WaitForSeconds(3.0f);
+
+       // debuggerLogger.text += "\n * YIELD STARTED *";
+
         _playbackGo.SetActive(true);
+
+      //  debuggerLogger.text += "\n * SETACTIVE TRUE STARTED *";
+
         SkeletonPlayback pb = _playbackGo.GetComponent<SkeletonPlayback>();
+
+      //  debuggerLogger.text += "\n * SKELETON STARTED *";
+
+
         pb.OverrideMainSequence(_handSequenceRecordings[0]);
+
+       // debuggerLogger.text += "\n * OVERRIDE STARTED *";
 
         //StartCoroutine(WaitToChangeScene());
         gameObject.SetActive(false);
+
+        //debuggerLogger.text += "\n * SAVISETACTIVE FALSE STARTED *";
     }
 
    /* IEnumerator WaitToChangeScene()
@@ -300,7 +339,9 @@ public class DataRecorder :  MonoBehaviour
 
     private void ExportFiles()
     {
-        GameObject keyboardConfig = GameObject.Find("KeyboardConfiguration");
+        debuggerLogger.text = "* SAVING RECORDING *";
+
+       /* GameObject keyboardConfig = GameObject.Find("KeyboardConfiguration");
         if(keyboardConfig != null){
             Debug.Log("found config. now transforming into keyboard space");
             ConfigurePhysicalKeyboard config = keyboardConfig.GetComponent<ConfigurePhysicalKeyboard>();
@@ -311,24 +352,50 @@ public class DataRecorder :  MonoBehaviour
                 Debug.Log(inverseKeyboardSpaceMatrix);
                 handSequence.applyTransformation(inverseKeyboardSpaceMatrix);
             }
-        }
+        }*/
 
-        int nr = 0;
-        foreach (var handSequence in _handSequenceRecordings)
-        {
-            string filename = _fileName;// + "(" + nr + ")";
+        //debuggerLogger.text += "\n * FIRSTIF STARTED *";
+
+        
+        //foreach (var handSequence in _handSequenceRecordings)
+        //{
+            //debuggerLogger.text += "\n * foreach STARTED *";
+
+            string timestamp = DateTime.Now.ToString("dd-MM-yy");
+
+            string filename = "recRnew";  //_fileName + timestamp;
+
+            //debuggerLogger.text += "\n * filename will be * " + filename;
             
-            /*
-             * NullReferenceException: Object reference not set to an instance of an object
-HandSequence.setRotationsFromTranslations () (at Assets/VirtualHands/HandSequence/HandSequence.cs:48)
-HandSequence.applyTransformation (UnityEngine.Matrix4x4 transformationMatrix) (at Assets/VirtualHands/HandSequence/HandSequence.cs:43)
-DataRecorder.ExportFiles () (at Assets/VirtualHands/HandSequence/DataRecorder.cs:142)
-DataRecorder.OnApplicationQuit () (at Assets/VirtualHands/HandSequence/DataRecorder.cs:128)
 
-             */
-            HandSequenceExporter.Export(handSequence, filename, _saveLocation);
+
+            _saveLocation = Application.persistentDataPath; //"/mnt/sdcard/Android/data";
+
+
+            List<string> lines = new List<string>();
+
+            //debuggerLogger.text += "\n * getting into for *";
+        
+        
+            for (int i = 0; i < _handSequenceRecordings[nr].frames.Count; i++)
+            {
+                //debuggerLogger.text += "\n * inside for *";
+                lines.Add(_handSequenceRecordings[nr].frames[i].ToString());
+                //debuggerLogger.text += "\n * line added *";
+            }
+            //debuggerLogger.text += "\n * all lines added *";
+
+            File.WriteAllLines(_saveLocation+"/"+filename+".hseq", lines);
+            
+
+
+
+            debuggerLogger.text = "* EXPORTING FINISHED*";// + filename + " to " + _saveLocation + "\n not to " + Application.persistentDataPath;
+  
             nr++;
-        }
+        //}
+
+        //debuggerLogger.text += "\n * SECOND IF STARTED *";
     }
 
     private void SwitchToPlaybackMode()
