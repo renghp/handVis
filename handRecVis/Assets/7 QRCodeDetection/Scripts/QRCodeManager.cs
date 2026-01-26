@@ -193,8 +193,20 @@ namespace Meta.XR.MRUtilityKitSamples.QRCodeDetection
 
 
 
-            var instance2 = Instantiate(_qrCodeInstruction, trackable.transform);
+            //var instance2 = Instantiate(_qrCodeInstruction, trackable.transform);
             var instance = Instantiate(_qrCodePrefab, trackable.transform);
+
+            _qrCodeInstruction.transform.parent = instance.transform;
+
+            _qrCodeInstruction.transform.localPosition = _qrCodePrefab.transform.localPosition;
+            _qrCodeInstruction.transform.localPosition = new Vector3(_qrCodeInstruction.transform.localPosition.x, _qrCodePrefab.transform.localPosition.y + 0.3f, _qrCodeInstruction.transform.localPosition.z);
+
+            _qrCodeInstruction.transform.localEulerAngles = _qrCodePrefab.transform.localEulerAngles;
+            //_qrCodeInstruction.transform.localEulerAngles = new Vector3(_qrCodePrefab.transform.localEulerAngles.x+90f, _qrCodeInstruction.transform.localEulerAngles.y, _qrCodeInstruction.transform.localEulerAngles.z);    //slight offset in yaw
+            _qrCodeInstruction.transform.localEulerAngles = new Vector3(86.2526779f,75.8418579f,76.0955505f);
+
+            _qrCodeInstruction.gameObject.SetActive(true);
+
             var qrCode = instance.GetComponent<QRCode>();
             qrCode.Initialize(trackable);
             instance.GetComponent<Bounded2DVisualizer>().Initialize(trackable);

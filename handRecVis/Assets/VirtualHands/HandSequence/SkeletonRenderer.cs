@@ -24,6 +24,8 @@ public class SkeletonRenderer : MonoBehaviour
     private static readonly Quaternion _capsuleRotationOffset = Quaternion.Euler(90, 0, 0);
 
     public static GameObject _handGO;
+
+    public Transform origin;
     
     void Start()
     {
@@ -36,7 +38,7 @@ public class SkeletonRenderer : MonoBehaviour
     private class BoneVisualization
     {
         private Vector3 _bonePosition;
-        private BoneVisualization _parent;
+        public BoneVisualization _parent;
         private Vector3 _delta;
         public OVRHandData.ovrHandEnum ID;
         
@@ -90,6 +92,9 @@ public class SkeletonRenderer : MonoBehaviour
         {
             if (_parent != null)
             {
+
+                //boneGO.transform.SetParent = origin.transform;
+
                 _delta = _bonePosition - _parent.BonePosition;
                 boneGO.transform.position = BonePosition - _delta/2;
                 boneGO.transform.localRotation = BoneRotation * _capsuleRotationOffset;
