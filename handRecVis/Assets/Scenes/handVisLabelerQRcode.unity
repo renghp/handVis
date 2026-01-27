@@ -13637,6 +13637,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _qrCodeInstruction: {fileID: 11251564}
+  _debugTextField: {fileID: 391351671}
   _qrCodePrefab: {fileID: 9212524285875627578, guid: 5bde9f9c757d3cd49b9baa20a11e2cd6,
     type: 3}
   _uiInstance: {fileID: 0}

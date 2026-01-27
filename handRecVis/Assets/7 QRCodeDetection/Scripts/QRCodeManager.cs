@@ -20,6 +20,8 @@
 
 using Meta.XR.MRUtilityKit;
 using Meta.XR.Samples;
+using System.IO;
+using UnityEngine.UI;
 
 using System;
 
@@ -131,6 +133,9 @@ namespace Meta.XR.MRUtilityKitSamples.QRCodeDetection
         GameObject _qrCodeInstruction;
 
         [SerializeField]
+        Text _debugTextField;
+
+        [SerializeField]
         QRCode _qrCodePrefab;
 
         [SerializeField]
@@ -191,21 +196,14 @@ namespace Meta.XR.MRUtilityKitSamples.QRCodeDetection
 
             var log = $"{nameof(OnTrackableAdded)}: QRCode tracked!\nUUID={trackable.Anchor.Uuid}";
 
+            
+
 
 
             //var instance2 = Instantiate(_qrCodeInstruction, trackable.transform);
             var instance = Instantiate(_qrCodePrefab, trackable.transform);
 
-            _qrCodeInstruction.transform.parent = instance.transform;
-
-            _qrCodeInstruction.transform.localPosition = _qrCodePrefab.transform.localPosition;
-            _qrCodeInstruction.transform.localPosition = new Vector3(_qrCodeInstruction.transform.localPosition.x, _qrCodePrefab.transform.localPosition.y + 0.3f, _qrCodeInstruction.transform.localPosition.z);
-
-            _qrCodeInstruction.transform.localEulerAngles = _qrCodePrefab.transform.localEulerAngles;
-            //_qrCodeInstruction.transform.localEulerAngles = new Vector3(_qrCodePrefab.transform.localEulerAngles.x+90f, _qrCodeInstruction.transform.localEulerAngles.y, _qrCodeInstruction.transform.localEulerAngles.z);    //slight offset in yaw
-            _qrCodeInstruction.transform.localEulerAngles = new Vector3(86.2526779f,75.8418579f,76.0955505f);
-
-            _qrCodeInstruction.gameObject.SetActive(true);
+            
 
             var qrCode = instance.GetComponent<QRCode>();
             qrCode.Initialize(trackable);
@@ -214,6 +212,33 @@ namespace Meta.XR.MRUtilityKitSamples.QRCodeDetection
             ++_activeCount;
 
             Log($"{log}\nPayload={qrCode.PayloadText}");
+
+            //string machineName = qrCode.PayloadText;
+
+            _debugTextField.text = " QRCode:" + qrCode.PayloadText;    /// qr code text 
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /// rendering and positioning hand instructions:
+
+            if (qrCode.PayloadText=="\"Neri Marchesini BL400\"")   //quotes \" \" are mandatory!!
+            {
+                //_debugTextField.text = "are equal";
+                _qrCodeInstruction.transform.parent = instance.transform;
+
+                _qrCodeInstruction.transform.localPosition = _qrCodePrefab.transform.localPosition;
+                _qrCodeInstruction.transform.localPosition = new Vector3(_qrCodeInstruction.transform.localPosition.x, _qrCodePrefab.transform.localPosition.y + 0.3f, _qrCodeInstruction.transform.localPosition.z);
+
+                _qrCodeInstruction.transform.localEulerAngles = _qrCodePrefab.transform.localEulerAngles;
+                //_qrCodeInstruction.transform.localEulerAngles = new Vector3(_qrCodePrefab.transform.localEulerAngles.x+90f, _qrCodeInstruction.transform.localEulerAngles.y, _qrCodeInstruction.transform.localEulerAngles.z);    //slight offset in yaw
+                _qrCodeInstruction.transform.localEulerAngles = new Vector3(86.2526779f,75.8418579f,76.0955505f);
+
+                _qrCodeInstruction.gameObject.SetActive(true);
+
+            }
+
+            //_debugTextField.text = " QRCode:" + qrCode.PayloadText;     /// qr code text
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         }
 
         public void OnTrackableRemoved(MRUKTrackable trackable)

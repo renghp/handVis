@@ -41,6 +41,8 @@ public class SkeletonRenderer : MonoBehaviour
         public BoneVisualization _parent;
         private Vector3 _delta;
         public OVRHandData.ovrHandEnum ID;
+
+        
         
         public Vector3 BonePosition { 
             get => _bonePosition;
