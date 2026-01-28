@@ -33,6 +33,9 @@ public class followOriginal : MonoBehaviour
                     Debug.Log(or.name);
                     transform.localPosition = or.transform.position;
                     transform.localEulerAngles = or.transform.eulerAngles;
+
+                    or.GetComponent<Renderer>().enabled = false;
+
                     break;            
                 }
             }

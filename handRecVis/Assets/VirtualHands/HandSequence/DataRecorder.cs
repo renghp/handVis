@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using UnityEngine.UI;
 using Meta.XR.MRUtilityKit;
+//using UnityEngine.AudioModule;
 
 /// <summary>
 /// Importer for a OpenXR animated hand sequence, recorded from 
@@ -81,10 +82,12 @@ public class DataRecorder :  MonoBehaviour
         _handSequenceRecordings[_currentRecording].frames.Add(data);
     }
 
+
     public void StartRecording()
     {
          Debug.Log("poked record");
          
+         AudioSource audioSource = GetComponent<AudioSource>();
 
             if (!_isRecording)
             {
@@ -94,6 +97,16 @@ public class DataRecorder :  MonoBehaviour
                 _handSequenceRecordings.Add(ScriptableObject.CreateInstance<HandSequence>());
                 Debug.Log(" * RECORDING STARTED *");
                 debuggerLogger.text = "* RECORDING STARTED *";
+
+
+               /* foreach (var device in Microphone.devices)
+                {
+                    Debug.Log("mic Name: " + device);
+                }*/
+
+                //audioSource.clip = Microphone.Start("Headset Microphone (Oculus Virtual Audio Device)", true, 10000, 44100);     //length?
+
+                
             }
             else
             {
@@ -102,8 +115,15 @@ public class DataRecorder :  MonoBehaviour
                 debuggerLogger.text = "* RECORDING STOPPED *";
                 _currentRecording += 1;
 
+                Microphone.End("Headset Microphone (Oculus Virtual Audio Device)");
+
+                
+
                 ExportFiles();
                 StartCoroutine(WaitForExportSave());
+
+                audioSource.Play();     
+
             }
 
             _isRecording = !_isRecording;

@@ -54,7 +54,7 @@ public class SkeletonRenderer : MonoBehaviour
             set { _boneRotation = value; }
         }
         
-        private GameObject jointGO;
+       // private GameObject jointGO;
         private GameObject boneGO;
 
         private Material _material;
@@ -66,12 +66,14 @@ public class SkeletonRenderer : MonoBehaviour
             _parent = parent;
             _bonePosition = refPosition;
             
-            jointGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            jointGO.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
-            jointGO.transform.SetParent(_handGO.transform, true);
+          //  jointGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+          //  jointGO.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+          //  jointGO.transform.SetParent(_handGO.transform, true);
 
             boneGO = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             boneGO.name = ("bone-" + ID.ToString());
+
+           
 
             boneGO.transform.SetParent(_handGO.transform, true);
 
@@ -85,7 +87,7 @@ public class SkeletonRenderer : MonoBehaviour
             //_material.color = OVRHandData.jointsCustom[index].Color;
             _material.color = Color.gray;
             boneGO.GetComponent<Renderer>().material = _material;
-            jointGO.GetComponent<Renderer>().material = _material;
+            //jointGO.GetComponent<Renderer>().material = _material;
 
             float bone_length = 1.0f;
             if (parent != null) {
@@ -109,15 +111,15 @@ public class SkeletonRenderer : MonoBehaviour
                 boneGO.SetActive(ShouldRender);
             }
             
-            jointGO.transform.localPosition = BonePosition;
+           // jointGO.transform.localPosition = BonePosition;
             
-            jointGO.SetActive(ShouldRender);
+            //jointGO.SetActive(ShouldRender);
             if (!ShouldRender) return;
         }
 
         public void DestroyVis()
         {
-            Destroy(jointGO);
+            //Destroy(jointGO);
             if (_parent != null)
             {
                 Destroy(boneGO);
