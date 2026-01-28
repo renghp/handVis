@@ -75,6 +75,12 @@ public class SkeletonRenderer : MonoBehaviour
 
             boneGO.transform.SetParent(_handGO.transform, true);
 
+
+
+           boneGO.transform.tag = ("originalRight");
+           // else
+            //    boneGO.transform.parent.tag = ("originalRight");
+
             _material = new Material(Shader.Find("Universal Render Pipeline/Lit"));   
             //_material.color = OVRHandData.jointsCustom[index].Color;
             _material.color = Color.gray;

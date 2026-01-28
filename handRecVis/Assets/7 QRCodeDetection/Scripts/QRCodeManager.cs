@@ -133,6 +133,9 @@ namespace Meta.XR.MRUtilityKitSamples.QRCodeDetection
         GameObject _qrCodeInstruction;
 
         [SerializeField]
+        GameObject _rightHandClone;
+
+        [SerializeField]
         Text _debugTextField;
 
         [SerializeField]
@@ -222,6 +225,7 @@ namespace Meta.XR.MRUtilityKitSamples.QRCodeDetection
             if (qrCode.PayloadText=="\"Neri Marchesini BL400\"")   //quotes \" \" are mandatory!!
             {
                 //_debugTextField.text = "are equal";
+
                 _qrCodeInstruction.transform.parent = instance.transform;
 
                 _qrCodeInstruction.transform.localPosition = _qrCodePrefab.transform.localPosition;
@@ -232,6 +236,18 @@ namespace Meta.XR.MRUtilityKitSamples.QRCodeDetection
                 _qrCodeInstruction.transform.localEulerAngles = new Vector3(86.2526779f,75.8418579f,76.0955505f);
 
                 _qrCodeInstruction.gameObject.SetActive(true);
+
+
+                
+
+                _rightHandClone.transform.localPosition = _qrCodePrefab.transform.localPosition;
+                //_rightHandClone.transform.localPosition = new Vector3(_rightHandClone.transform.localPosition.x + , _qrCodePrefab.transform.localPosition.y + 0.3f, _rightHandClone.transform.localPosition.z);
+
+                _rightHandClone.transform.localEulerAngles = _qrCodePrefab.transform.localEulerAngles;
+
+                _rightHandClone.transform.parent = instance.transform;
+                
+                _rightHandClone.gameObject.SetActive(true);
 
             }
 
