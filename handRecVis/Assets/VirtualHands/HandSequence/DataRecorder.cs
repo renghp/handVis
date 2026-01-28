@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using UnityEngine.UI;
 using Meta.XR.MRUtilityKit;
+using UnityEngine.Android;
 //using UnityEngine.AudioModule;
 
 /// <summary>
@@ -68,6 +69,8 @@ public class DataRecorder :  MonoBehaviour
 
     public Text debuggerLogger;
 
+    public  AudioSource audioSource;
+
     int nr = 0;
     
     private void RecordCurrentFrame()
@@ -87,7 +90,7 @@ public class DataRecorder :  MonoBehaviour
     {
          Debug.Log("poked record");
          
-         AudioSource audioSource = GetComponent<AudioSource>();
+        
 
             if (!_isRecording)
             {
@@ -99,13 +102,13 @@ public class DataRecorder :  MonoBehaviour
                 debuggerLogger.text = "* RECORDING STARTED *";
 
 
-               /* foreach (var device in Microphone.devices)
+                foreach (var device in Microphone.devices)
                 {
                     Debug.Log("mic Name: " + device);
-                }*/
+                }
 
-                //audioSource.clip = Microphone.Start("Headset Microphone (Oculus Virtual Audio Device)", true, 10000, 44100);     //length?
-
+                audioSource.clip = Microphone.Start(null, false, 180, 16000);     //length?
+             Debug.Log("mic started recording");  
                 
             }
             else
@@ -115,14 +118,19 @@ public class DataRecorder :  MonoBehaviour
                 debuggerLogger.text = "* RECORDING STOPPED *";
                 _currentRecording += 1;
 
-                Microphone.End("Headset Microphone (Oculus Virtual Audio Device)");
+                Microphone.End(null);
+                 Debug.Log("mic stopped recording");  
 
                 
 
                 ExportFiles();
                 StartCoroutine(WaitForExportSave());
 
-                audioSource.Play();     
+               /* audioSource.Stop();
+                audioSource.Play(); 
+                Debug.Log("mic started playing from datarecoder");*/
+
+                //Debug.Log("mic started playing");  
 
             }
 
@@ -163,6 +171,10 @@ public class DataRecorder :  MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R) || OVRInput.GetDown(OVRInput.RawButton.X))
         {
              Debug.Log("pressed R or VR.A");
+
+             //Microphone.End("Headset (WH-1000XM3)");
+
+
 
             if (!_isRecording)
             {
@@ -221,6 +233,10 @@ public class DataRecorder :  MonoBehaviour
         //StartCoroutine(WaitToChangeScene());
         gameObject.SetActive(false);
 
+        /*audioSource.Stop();
+                audioSource.Play(); 
+                Debug.Log("mic started playing from datarecorder");*/
+
         //debuggerLogger.text += "\n * SAVISETACTIVE FALSE STARTED *";
     }
 
@@ -247,9 +263,16 @@ public class DataRecorder :  MonoBehaviour
 
     void Start()
     {
+
+        if(!Permission.HasUserAuthorizedPermission(Permission.Microphone)){
+     Permission.RequestUserPermission(Permission.Microphone);
+        }
         _isRecording = false;
         _currentRecording = 0;
         _handSequenceRecordings = new List<HandSequence>();
+
+        
+        audioSource = audioSource.GetComponent<AudioSource>();
 
         SearchConfig();
         _config.OnKeyboardInputdeviceKeyPressed += KeyboardInput;

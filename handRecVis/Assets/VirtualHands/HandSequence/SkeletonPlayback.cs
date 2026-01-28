@@ -40,7 +40,7 @@ KeyboardVisualizer.KeyboardDataProvider
     private HandSequence _sequence;
 
     [SerializeField]
-    private bool _loop;
+    private bool _loop = true;
     
     private int _currentFrame = 0;
 
@@ -52,6 +52,8 @@ KeyboardVisualizer.KeyboardDataProvider
     private int _framesAmount;
 
     public Text debuggerLogger; 
+
+    public AudioSource audioSource;
 
     private enum PlaybackState
     {
@@ -192,6 +194,7 @@ KeyboardVisualizer.KeyboardDataProvider
 
     private void StartPlayback()
     {
+        
         _activePlaybackState = PlaybackState.Playing;
         
         _interpolatedFrame = _sequence.frames[0].DeepCopy();
@@ -282,7 +285,13 @@ KeyboardVisualizer.KeyboardDataProvider
         if (right >= _framesAmount)
         {
             StopPlayback();
-            if (_loop) StartPlayback();
+            if (_loop) {
+                StartPlayback();
+                audioSource.Stop();
+                audioSource.time = 0.0f;
+                audioSource.Play(); 
+                Debug.Log("mic started playing from skeletonpb 1");  
+            }
             return;
         }
 
@@ -470,8 +479,13 @@ KeyboardVisualizer.KeyboardDataProvider
         _sequence = _importSequence.DeepCopy();
         _midiEventBuffer = new List<HandSequence.SerializableNoteEvent>();
 
+        audioSource = GetComponent<AudioSource>();
+
         //gets the time of the last frame
         _recordingLength = _sequence.frames[_sequence.frames.Count - 1].time;
+
+
+
         _framesAmount = _sequence.frames.Count;
 
         isInitialized = _sequence.hasData();
@@ -479,6 +493,10 @@ KeyboardVisualizer.KeyboardDataProvider
         _config.OnKeyboardInputdeviceKeyPressed += KeyboardInput;
 
         StartPlayback();        //forcing playback to start without key input
+        audioSource.Stop();
+        audioSource.time = 0.0f;
+                audioSource.Play(0); 
+                Debug.Log("mic started playing from skeletonpb 2");
 
         
     }
@@ -504,6 +522,9 @@ KeyboardVisualizer.KeyboardDataProvider
         _config.OnKeyboardInputdeviceKeyPressed += KeyboardInput;
 
         StartPlayback();        //forcing playback to start without key input
+        audioSource.time = 0.0f;
+                audioSource.Play(0);  
+                Debug.Log("mic started playing from skeletonpb 3");
     }
 
     HandSequence readFile(string fileName)
@@ -643,6 +664,9 @@ KeyboardVisualizer.KeyboardDataProvider
         Debug.Log("Override complete");
 
         StartPlayback();
+        audioSource.time = 0.0f;
+        audioSource.Play(0);  
+        Debug.Log("mic started playing from skeletonpb 4");
 
     }
 
@@ -657,6 +681,9 @@ KeyboardVisualizer.KeyboardDataProvider
                 if(!_isPlaybackActive)
                 {
                     StartPlayback();
+                    audioSource.time = 0.0f;
+                audioSource.Play(0); 
+                Debug.Log("mic started playing from skeletonpb 5");
                 }
                 // On active
                 else
@@ -707,6 +734,14 @@ KeyboardVisualizer.KeyboardDataProvider
 
     void Update()
     {
+
+        if (audioSource.time > _recordingLength)
+        {
+            audioSource.Play(0);
+            Debug.Log("time is: "+_playbackTime);
+        }
+
+        
         if (Input.GetKeyDown(KeyCode.P))
         {
             PlayNewSequence("recR.hseq");
