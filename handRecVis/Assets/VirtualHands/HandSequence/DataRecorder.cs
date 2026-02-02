@@ -71,6 +71,8 @@ public class DataRecorder :  MonoBehaviour
 
     public  AudioSource audioSource;
 
+    public GameObject videoRecorder;
+
     int nr = 0;
     
     private void RecordCurrentFrame()
@@ -109,6 +111,9 @@ public class DataRecorder :  MonoBehaviour
 
                 audioSource.clip = Microphone.Start(null, false, 180, 16000);     //length?
              Debug.Log("mic started recording");  
+
+                videoRecorder.GetComponent<recordAsVideo>().startRecording();
+                Debug.Log("calling video recorder from data recorder");  
                 
             }
             else
@@ -121,7 +126,7 @@ public class DataRecorder :  MonoBehaviour
                 Microphone.End(null);
                  Debug.Log("mic stopped recording");  
 
-                
+                videoRecorder.GetComponent<recordAsVideo>().stopRecording();
 
                 ExportFiles();
                 StartCoroutine(WaitForExportSave());
@@ -179,10 +184,12 @@ public class DataRecorder :  MonoBehaviour
             if (!_isRecording)
             {
                 //start new recording
-                _startTime = Time.time;
+
+                StartRecording();
+                /*_startTime = Time.time;
                 _hasRecording = true;
                 _handSequenceRecordings.Add(ScriptableObject.CreateInstance<HandSequence>());
-                Debug.Log(" * RECORDING STARTED *");
+                Debug.Log(" * RECORDING STARTED *");*/
             }
             else
             {
