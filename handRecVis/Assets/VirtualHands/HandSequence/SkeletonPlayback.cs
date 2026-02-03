@@ -53,7 +53,25 @@ KeyboardVisualizer.KeyboardDataProvider
 
     public Text debuggerLogger; 
 
+    private bool isPlaying = false;
+
     public AudioSource audioSource;
+
+
+    private Texture2D texFromFile;
+
+    public RawImage texTarget;
+    //public Texture2D texTarget;
+
+    //private bool isRecording;
+
+
+    [Header("Recording Settings")]
+    public int captureFPS;
+    public string folderName = "ImageSequence";
+
+    private int frameIndex = 0;
+    private float frameTimer = 0f;
 
     private enum PlaybackState
     {
@@ -227,6 +245,7 @@ KeyboardVisualizer.KeyboardDataProvider
         DestroyProgressBar();
         Debug.Log("Applying transform on stop playback");
         Debug.Log(_currentKeyboardSpaceMatrix);
+        isPlaying = false;
     }
 
     void CreateProgressBar(ConfigurePhysicalKeyboard.Config config)
@@ -284,11 +303,13 @@ KeyboardVisualizer.KeyboardDataProvider
         
         if (right >= _framesAmount)
         {
+            isPlaying = false;
             StopPlayback();
             if (_loop) {
                 StartPlayback();
                 audioSource.Stop();
                 audioSource.time = 0.0f;
+                frameTimer = 0f;
                 audioSource.Play(); 
                 Debug.Log("mic started playing from skeletonpb 1");  
             }
@@ -394,6 +415,7 @@ KeyboardVisualizer.KeyboardDataProvider
                 }
                 else
                 {
+                    isPlaying = false;
                     StopPlayback();
                     break;
                 }
@@ -474,6 +496,11 @@ KeyboardVisualizer.KeyboardDataProvider
 
     void Start()
     {
+
+        isPlaying = false;
+        frameTimer = 0f;
+        frameIndex = 0;
+
         SearchConfig();
         _notesDown = new HashSet<int>();
         _sequence = _importSequence.DeepCopy();
@@ -495,8 +522,12 @@ KeyboardVisualizer.KeyboardDataProvider
         StartPlayback();        //forcing playback to start without key input
         audioSource.Stop();
         audioSource.time = 0.0f;
-                audioSource.Play(0); 
-                Debug.Log("mic started playing from skeletonpb 2");
+
+        isPlaying = true;
+        frameTimer = 0f;
+        frameIndex = 0;
+        audioSource.Play(0); 
+        Debug.Log("mic started playing from skeletonpb 2");
 
         
     }
@@ -523,8 +554,11 @@ KeyboardVisualizer.KeyboardDataProvider
 
         StartPlayback();        //forcing playback to start without key input
         audioSource.time = 0.0f;
-                audioSource.Play(0);  
-                Debug.Log("mic started playing from skeletonpb 3");
+        isPlaying = true;
+        frameTimer = 0f;
+        frameIndex = 0;
+        audioSource.Play(0);  
+        Debug.Log("mic started playing from skeletonpb 3");
     }
 
     HandSequence readFile(string fileName)
@@ -665,6 +699,9 @@ KeyboardVisualizer.KeyboardDataProvider
 
         StartPlayback();
         audioSource.time = 0.0f;
+        isPlaying = true;
+        frameTimer = 0f;
+        frameIndex = 0;
         audioSource.Play(0);  
         Debug.Log("mic started playing from skeletonpb 4");
 
@@ -682,14 +719,18 @@ KeyboardVisualizer.KeyboardDataProvider
                 {
                     StartPlayback();
                     audioSource.time = 0.0f;
-                audioSource.Play(0); 
-                Debug.Log("mic started playing from skeletonpb 5");
+                    isPlaying = true;
+                    frameTimer = 0f;
+                    frameIndex = 0;
+                    audioSource.Play(0); 
+                    Debug.Log("mic started playing from skeletonpb 5");
                 }
                 // On active
                 else
                 {
                     /*_isPaused = !_isPaused;
                     _progressBar.SetTextLeft(_isPaused?"Paused \u25b6":"Playing ▶");*/
+                    isPlaying = false;
                     StopPlayback();
                 }
                 break;
@@ -731,12 +772,80 @@ KeyboardVisualizer.KeyboardDataProvider
         }
     }
 
+    string GetReadPath()
+    {
+        
+        #if UNITY_ANDROID && !UNITY_EDITOR
+                //debuggerLogger.text+="\nsaving path is:" + Path.Combine(Application.persistentDataPath, folderName);
+                return Path.Combine(Application.persistentDataPath, folderName);
+        #else
+                //debuggerLogger.text+="\nsaving path is:" + Path.Combine(Application.dataPath, folderName);
+                return Path.Combine(Application.dataPath, folderName);
+        #endif
+    }
+
+    Texture2D LoadTexture(string path, int currentFrame)
+    {
+
+        path = path + "/frame_"+currentFrame+".jpg";
+
+        if (!File.Exists(path))
+        {
+            frameTimer = 0f;
+            frameIndex = 0;
+
+            path = path + "/frame_"+frameIndex+".jpg";
+
+            byte[] imageData0 = File.ReadAllBytes(path);
+            texFromFile = new Texture2D(2, 2, TextureFormat.RGB24, false);
+            texFromFile.LoadImage(imageData0); // auto-resizes texture
+            return texFromFile;
+
+
+            //Debug.LogError("File not found: " + path);
+            //return null;
+        }
+
+        byte[] imageData = File.ReadAllBytes(path);
+        texFromFile = new Texture2D(2, 2, TextureFormat.RGB24, false);
+        texFromFile.LoadImage(imageData); // auto-resizes texture
+        return texFromFile;
+    }
+
+
+
 
     void Update()
     {
+        if (isPlaying)
+        {
+            frameTimer += Time.deltaTime;
+
+         if (frameTimer >= 1f / captureFPS)         //$"frame_{frameIndex}.jpg"
+            {
+                frameTimer -= 1f / captureFPS;          
+
+                texFromFile = LoadTexture(GetReadPath(), frameIndex);
+                texTarget.texture = texFromFile;
+                texTarget.SetNativeSize();
+                
+                /*RenderTexture.active = texFromFeed;
+                uncompTex.ReadPixels(new Rect(0, 0, texFromFeed.width, texFromFeed.height), 0, 0);
+                uncompTex.Apply();
+                RenderTexture.active = null;*/
+
+
+                frameIndex++;
+            }
+
+        }
+        
 
         if (audioSource.time > _recordingLength)
         {
+            isPlaying = true;
+            frameTimer = 0f;
+            frameIndex = 0;
             audioSource.Play(0);
             Debug.Log("time is: "+_playbackTime);
         }
@@ -786,6 +895,7 @@ KeyboardVisualizer.KeyboardDataProvider
 
             if (_playbackMultiplier < 0.0f && _playbackTime < 0.0f)
             {
+                isPlaying = false;
                 StopPlayback();
             }
 
