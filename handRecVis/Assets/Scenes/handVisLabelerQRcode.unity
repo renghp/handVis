@@ -12274,6 +12274,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 875260709271607064, guid: 0e9e59a9b5566489fad35afecaeac3a9,
         type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 875260709271607064, guid: 0e9e59a9b5566489fad35afecaeac3a9,
+        type: 3}
       propertyPath: m_Texture
       value: 
       objectReference: {fileID: 2800000, guid: 544596c07f0d21642a25d7d63ae7cfb5, type: 3}
@@ -15874,6 +15879,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1748868316715821956, guid: abfaad578d05e4a09838223134c41c46,
+        type: 3}
+      propertyPath: _maxFramerate
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 1748868316715821956, guid: abfaad578d05e4a09838223134c41c46,
+        type: 3}
+      propertyPath: RequestedResolution.x
+      value: 640
+      objectReference: {fileID: 0}
+    - target: {fileID: 1748868316715821956, guid: abfaad578d05e4a09838223134c41c46,
+        type: 3}
+      propertyPath: RequestedResolution.y
+      value: 480
+      objectReference: {fileID: 0}
     - target: {fileID: 7047676844597515174, guid: abfaad578d05e4a09838223134c41c46,
         type: 3}
       propertyPath: m_LocalPosition.x

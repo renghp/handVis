@@ -19,6 +19,7 @@ public class recordAsVideo : MonoBehaviour
 
     private bool isRecording;
 
+
     [Header("Recording Settings")]
     public int captureFPS;
     public string folderName = "ImageSequence";
@@ -99,20 +100,22 @@ public class recordAsVideo : MonoBehaviour
 
         //debuggerLogger.text+="\nsaving frame";
         //Debug.Log("saving frame");
-        byte[] png = ImageConversion.EncodeToPNG(uncompTex);        //would another format be less hassle?
+        //byte[] png = ImageConversion.EncodeToPNG(uncompTex);        //would another format be less hassle?
+        byte[] jpg = ImageConversion.EncodeToJPG(uncompTex, 50);         //50% quality jpg
 
         //debuggerLogger.text+="\nframe encoded";
 
         string filePath = Path.Combine(
             GetSavePath(),
            // $"frame_{frameIndex:D05}.png"
-            $"frame_{frameIndex}.png"
+           // $"frame_{frameIndex}.png"
+            $"frame_{frameIndex}.jpg"
         );
 
         //debuggerLogger.text+="\nwriting frame";
         //Debug.Log("writing frame");
 
-        File.WriteAllBytes(filePath, png);
+        File.WriteAllBytes(filePath, jpg);
         frameIndex++;
         //debuggerLogger.text+="\nframe written";
         //Debug.Log("frame written");
