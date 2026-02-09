@@ -48,6 +48,10 @@ public class DataRecorder :  MonoBehaviour
 
     public GameObject machine;
 
+    private List<Vector3> _headPositions;
+
+    private List<Vector3> _headRotations;
+
     private List<HandSequence> _handSequenceRecordings;
 
     public bool recordMidi;
@@ -73,6 +77,8 @@ public class DataRecorder :  MonoBehaviour
 
     public GameObject videoRecorder;
 
+    public Transform proxyHeadPosition;
+
     int nr = 0;
     
     private void RecordCurrentFrame()
@@ -85,6 +91,9 @@ public class DataRecorder :  MonoBehaviour
         }
     
         _handSequenceRecordings[_currentRecording].frames.Add(data);
+
+        _headPositions.Add(proxyHeadPosition.localPosition);
+        _headRotations.Add(proxyHeadPosition.localEulerAngles);
     }
 
 
@@ -278,6 +287,8 @@ public class DataRecorder :  MonoBehaviour
         _currentRecording = 0;
         _handSequenceRecordings = new List<HandSequence>();
 
+        _headPositions = new List<Vector3>();
+        _headRotations = new List<Vector3>();
         
         audioSource = audioSource.GetComponent<AudioSource>();
 
@@ -436,7 +447,39 @@ public class DataRecorder :  MonoBehaviour
             //debuggerLogger.text += "\n * all lines added *";
 
             File.WriteAllLines(_saveLocation+"/"+filename+".hseq", lines);
-            
+
+
+
+            lines = new List<string>();
+
+
+
+            filename = "recRnew_HeadPos";  //_fileName + timestamp;
+
+            foreach (Vector3 hp in _headPositions)
+            {
+                lines.Add(hp.ToString());
+            }
+        
+
+            File.WriteAllLines(_saveLocation+"/"+filename+".txt", lines);
+
+
+            lines = new List<string>();
+
+
+
+            filename = "recRnew_HeadRots";  //_fileName + timestamp;
+
+            foreach (Vector3 hr in _headRotations)
+            {
+                lines.Add(hr.ToString());
+            }
+        
+
+            File.WriteAllLines(_saveLocation+"/"+filename+".txt", lines);
+
+         
 
 
 
