@@ -454,30 +454,30 @@ public class DataRecorder :  MonoBehaviour
 
 
 
-            filename = "recRnew_HeadPos";  //_fileName + timestamp;
+            filename = "recRnew.hseq_HP";  //_fileName + timestamp;
 
             foreach (Vector3 hp in _headPositions)
             {
-                lines.Add(hp.ToString());
+                lines.Add(hp.x.ToString()+","+hp.y.ToString()+","+hp.z.ToString());
             }
         
 
-            File.WriteAllLines(_saveLocation+"/"+filename+".txt", lines);
+            File.WriteAllLines(_saveLocation+"/"+filename, lines);
 
 
             lines = new List<string>();
 
 
 
-            filename = "recRnew_HeadRots";  //_fileName + timestamp;
+            filename = "recRnew.hseq_HR";  //_fileName + timestamp;
 
             foreach (Vector3 hr in _headRotations)
             {
-                lines.Add(hr.ToString());
+                lines.Add(hr.x.ToString()+","+hr.y.ToString()+","+hr.z.ToString());
             }
         
 
-            File.WriteAllLines(_saveLocation+"/"+filename+".txt", lines);
+            File.WriteAllLines(_saveLocation+"/"+filename, lines);
 
          
 

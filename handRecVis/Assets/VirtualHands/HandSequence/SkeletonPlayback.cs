@@ -57,10 +57,15 @@ KeyboardVisualizer.KeyboardDataProvider
 
     public AudioSource audioSource;
 
+    public Transform frustumHead;
+
 
     private Texture2D texFromFile;
 
     public RawImage texTarget;
+
+    private List<Vector3> _headPosFromFile;
+    private List<Vector3> _headRotFromFile;
     //public Texture2D texTarget;
 
     //private bool isRecording;
@@ -501,6 +506,9 @@ KeyboardVisualizer.KeyboardDataProvider
         frameTimer = 0f;
         frameIndex = 0;
 
+        _headPosFromFile = new List<Vector3>();
+        _headRotFromFile = new List<Vector3>();
+
         SearchConfig();
         _notesDown = new HashSet<int>();
         _sequence = _importSequence.DeepCopy();
@@ -510,6 +518,8 @@ KeyboardVisualizer.KeyboardDataProvider
 
         //gets the time of the last frame
         _recordingLength = _sequence.frames[_sequence.frames.Count - 1].time;
+
+        
 
 
 
@@ -537,8 +547,17 @@ KeyboardVisualizer.KeyboardDataProvider
         SearchConfig();
         _notesDown = new HashSet<int>();
 
+        debuggerLogger.text += "\nreading handFiles";
+
 
         _importSequence = readFile(fileName);
+
+
+        //debuggerLogger.text += "\ncalling headFiles";
+        //readFileHead("recRnew");
+
+        //debuggerLogger.text += "\nheadFiles called";
+
 
 
         _sequence = _importSequence.DeepCopy();
@@ -559,6 +578,64 @@ KeyboardVisualizer.KeyboardDataProvider
         frameIndex = 0;
         audioSource.Play(0);  
         Debug.Log("mic started playing from skeletonpb 3");
+    }
+
+    void readFileHead(string fileName)
+    {
+        var file = new FileStream(Application.persistentDataPath + "/" + fileName + "_HP", FileMode.Open, FileAccess.Read);
+        var reader = new StreamReader(file);
+        float fileLength = file.Length;
+
+        debuggerLogger.text += "\nreading positions";
+
+        while (true)
+        {
+            string line = reader.ReadLine(); // Read a new line
+            if (line == null) break; // stop at end of file
+
+            debuggerLogger.text += "\nline read: " +line;
+            
+
+            var element = line.Trim().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(float.Parse).ToArray();
+
+            Vector3 read = new Vector3(element[0], element[1], element[2]);
+
+            debuggerLogger.text += "\n x read: " +element[0];
+            debuggerLogger.text += "\n z read: " +element[1];
+            debuggerLogger.text += "\n z read: " +element[2];
+
+            _headPosFromFile.Add(read);
+
+            
+        
+        }
+
+        debuggerLogger.text += "\nreading rotations";
+
+        file = new FileStream(Application.persistentDataPath + "/" + fileName + "_HR", FileMode.Open, FileAccess.Read);
+        reader = new StreamReader(file);
+        fileLength = file.Length;
+
+        while (true)
+        {
+            string line = reader.ReadLine(); // Read a new line
+            if (line == null) break; // stop at end of file
+            
+            debuggerLogger.text += "\nline read: " +line;
+
+            var element = line.Trim().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(float.Parse).ToArray();
+
+            Vector3 read = new Vector3(element[0], element[1], element[2]);
+
+            debuggerLogger.text += "\n x read: " +element[0];
+            debuggerLogger.text += "\n z read: " +element[1];
+            debuggerLogger.text += "\n z read: " +element[2];
+            
+            _headRotFromFile.Add(read);
+        
+        }
+
+        
     }
 
     HandSequence readFile(string fileName)
@@ -687,6 +764,13 @@ KeyboardVisualizer.KeyboardDataProvider
 
     public void OverrideMainSequence(HandSequence s)
     {
+
+        debuggerLogger.text += "\ncalling headFiles";
+        readFileHead("recRnew.hseq");
+
+        debuggerLogger.text += "\nheadFiles called";
+
+
         _sequence = s.DeepCopy();
         _midiEventBuffer = new List<HandSequence.SerializableNoteEvent>();
 
@@ -817,17 +901,24 @@ KeyboardVisualizer.KeyboardDataProvider
 
     void Update()
     {
+
+
         if (isPlaying)
         {
             frameTimer += Time.deltaTime;
 
          if (frameTimer >= 1f / captureFPS)         //$"frame_{frameIndex}.jpg"
             {
+
+                frustumHead.localPosition = _headPosFromFile[_currentFrame];
+                frustumHead.localEulerAngles = _headRotFromFile[_currentFrame];
+
                 frameTimer -= 1f / captureFPS;          
 
                 texFromFile = LoadTexture(GetReadPath(), frameIndex);
                 texTarget.texture = texFromFile;
                 texTarget.SetNativeSize();
+
                 
                 /*RenderTexture.active = texFromFeed;
                 uncompTex.ReadPixels(new Rect(0, 0, texFromFeed.width, texFromFeed.height), 0, 0);
