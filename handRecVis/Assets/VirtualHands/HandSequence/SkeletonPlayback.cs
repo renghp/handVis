@@ -256,10 +256,17 @@ KeyboardVisualizer.KeyboardDataProvider
     void CreateProgressBar(ConfigurePhysicalKeyboard.Config config)
     {
         //Vector3 position = config.anchor + config.deltaVec * config.keyboardSurfaceLength / 2.0f;
-        Vector3 position = (config.anchor + config.deltaVec * config.keyboardSurfaceLength / 2.0f) +
-                           Vector3.Normalize(config.forwardVector) * (config.keyboardSurfaceLength / 3.0f) +
-                           Vector3.up * (config.keyboardSurfaceLength / 3.0f);
+        Vector3 position = new Vector3(0f,0f,0f); // (config.anchor + config.deltaVec * config.keyboardSurfaceLength / 2.0f) +
+                           //Vector3.Normalize(config.forwardVector) * (config.keyboardSurfaceLength / 3.0f) +
+                           //Vector3.up * (config.keyboardSurfaceLength / 3.0f);
         _progressBarGO = Instantiate(progressBarPrefab, position, Quaternion.LookRotation(-config.deltaVec, Vector3.up), transform);
+
+        _progressBarGO.transform.parent = debuggerLogger.transform.parent;
+
+        _progressBarGO.transform.localEulerAngles = new Vector3(debuggerLogger.transform.localEulerAngles.x, debuggerLogger.transform.localEulerAngles.y-90f, debuggerLogger.transform.localEulerAngles.z);
+        _progressBarGO.transform.localPosition = debuggerLogger.transform.localPosition;
+        _progressBarGO.transform.localScale = new Vector3(_progressBarGO.transform.localScale.x/4,_progressBarGO.transform.localScale.y/4,_progressBarGO.transform.localScale.z/4);
+
         _progressBar = _progressBarGO.transform.Find("inner")?.gameObject.GetComponent<progressbar>();
         _progressBar.Inititalize();
     }
@@ -906,6 +913,8 @@ KeyboardVisualizer.KeyboardDataProvider
         if (isPlaying)
         {
             frameTimer += Time.deltaTime;
+            texTarget.enabled = true;
+            
 
          if (frameTimer >= 1f / captureFPS)         //$"frame_{frameIndex}.jpg"
             {
@@ -929,6 +938,11 @@ KeyboardVisualizer.KeyboardDataProvider
                 frameIndex++;
             }
 
+        }
+
+        else
+        {
+            texTarget.enabled = false;
         }
         
 

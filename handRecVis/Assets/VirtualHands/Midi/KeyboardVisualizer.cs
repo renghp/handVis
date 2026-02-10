@@ -86,7 +86,7 @@ public class KeyboardVisualizer : MonoBehaviour
     // updates the visualizations when new keys are down
     public IEnumerator UpdateKeyboard()
     {
-        for (int i = leftKey; i <= rightKey; i++) {
+        /*for (int i = leftKey; i <= rightKey; i++) {
             int fingerThatPressed = -1;
             if(_dataProvider.GetNotesDown().Contains(i) && !keyVisualizations[i - leftKey].IsRendering()){
                 fingerThatPressed = _handUtil.GetFingerFromKey2(i);
@@ -95,12 +95,12 @@ public class KeyboardVisualizer : MonoBehaviour
                 if(logData) LogFingerToCSV(fingerThatPressed);
             }
             keyVisualizations[i - leftKey].Update(_dataProvider.GetNotesDown().Contains(i));
-        }
+        }*/
         yield return null;
     }
 
     private void LogFingerToCSV(int finger) {
-        string filePath = "Assets/VirtualHands/fingerLogs/" + logFileName + ".csv";
+        /*string filePath = "Assets/VirtualHands/fingerLogs/" + logFileName + ".csv";
 
         if (!File.Exists(filePath)) {
             using (StreamWriter writer = new StreamWriter(filePath, false)) {
@@ -110,20 +110,20 @@ public class KeyboardVisualizer : MonoBehaviour
             using (StreamWriter writer = new StreamWriter(filePath, true)) { 
                 writer.Write(finger + ",");
             }
-        }
+        }*/
     }
 
     public class KeyVisualization{
-        private Vector3 _keyPosition;
+       /* private Vector3 _keyPosition;
         private GameObject _plane;
         public Color color;
 
         public bool IsRendering(){
             return _plane.activeSelf;
-        }
+        }*/
 
         public KeyVisualization(int key, KeyboardVisualizer keyboardVisualizer){
-            _keyPosition = keyboardVisualizer.getPositionFromKey(key);
+          /*  _keyPosition = keyboardVisualizer.getPositionFromKey(key);
             //Debug.Log("spawning at pos: " + _keyPosition);
             //Vector3 deltaVec = Vector3.Normalize(keyboardVisualizer.rightCornerPosition - keyboardVisualizer.leftCornerPosition);
             Vector3 keyVector = (keyboardVisualizer.octaveWidth * keyboardVisualizer.deltaVec) / 7.0f;
@@ -136,30 +136,31 @@ public class KeyboardVisualizer : MonoBehaviour
             _plane.transform.rotation = Quaternion.LookRotation(keyboardVisualizer.forwardVector);
             _plane.transform.position = _keyPosition + keyVector/2.0f + Vector3.Normalize(keyboardVisualizer.forwardVector) * keyVector.magnitude;
 
-            Debug.Log("vis pos:" + _keyPosition);
+            Debug.Log("vis pos:" + _keyPosition);*/
         }
 
         public void destroy(){
-            Destroy(_plane);
+           // Destroy(_plane);
         }
         public void Update(bool shouldRender){
-            _plane.GetComponent<Renderer>().material.color = color;
-            _plane.SetActive(shouldRender);
+            //_plane.GetComponent<Renderer>().material.color = color;
+            //_plane.SetActive(shouldRender);
         }
     }
 
     Vector3 getPositionFromKey(int Key){
-        int scaleKey = Key%12;
+        /*int scaleKey = Key%12;
         Vector3 scalePos = getPositionFromScaleKey(scaleKey); 
         int octave = Key / 12;
         int anchorOctave = anchorKey / 12;
         Vector3 octaveVector = Vector3.Normalize(rightCornerPosition - leftCornerPosition) * octaveWidth;
         Vector3 octaveOffsetFromAnchor = (octave - anchorOctave) * octaveVector;
-        return scalePos + octaveOffsetFromAnchor + leftAnchor;
+        return scalePos + octaveOffsetFromAnchor + leftAnchor;*/
+        return Vector3.zero;
     }
 
     Vector3 getPositionFromScaleKey(int scaleKey){
-        Vector3 deltaVec = Vector3.Normalize(rightCornerPosition - leftCornerPosition);
+       /* Vector3 deltaVec = Vector3.Normalize(rightCornerPosition - leftCornerPosition);
         if(whiteKeys.Contains(scaleKey)){
             int i = whiteKeys.IndexOf(scaleKey);
             return (deltaVec * (octaveWidth/7.0f)) * i;
@@ -185,13 +186,13 @@ public class KeyboardVisualizer : MonoBehaviour
                 default:
                 return Vector3.zero;
             }
-        }
+        }*/
         return Vector3.zero;
     }
 
     void configUpdate(ConfigurePhysicalKeyboard.Config config){
 
-        leftKey = config.leftKey;
+        /*leftKey = config.leftKey;
         rightKey = config.rightKey;
         leftCornerPosition = config.leftCornerPosition;
         rightCornerPosition = config.rightCornerPosition;
@@ -218,11 +219,11 @@ public class KeyboardVisualizer : MonoBehaviour
         }
         _hasConfiguration = true;
         Debug.Log("config updated");
-        StartCoroutine(UpdateKeyboard());
+        StartCoroutine(UpdateKeyboard());*/
     }
 
     void SearchProvider(){
-        if(_dataProvider == null) {
+       /* if(_dataProvider == null) {
             if (_useActiveMIDI)
             {
                 GameObject deviceGO = GameObject.Find("MIDIDevice");
@@ -237,16 +238,16 @@ public class KeyboardVisualizer : MonoBehaviour
             if(provider != null){
                 _dataProvider = provider;
             }else{Debug.LogError("No provider found");}
-        }
+        }*/
     }
     void SearchConfig(){
-        if(_config == null) {
+       /* if(_config == null) {
             var configGO = GameObject.Find("KeyboardConfiguration");
             var config = configGO ? configGO.GetComponent<ConfigurePhysicalKeyboard>() : null;
             if(config != null){
                 _config = config;
             }else{Debug.LogError("No config found");}
-        }
+        }*/
     }
 
     // Update is called once per frame

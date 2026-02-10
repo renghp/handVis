@@ -11,6 +11,7 @@ public class followOriginal : MonoBehaviour
 
     void Start()
     {
+        gameObject.GetComponent<Renderer>().enabled = false;
         
     }
 
@@ -35,6 +36,7 @@ public class followOriginal : MonoBehaviour
                     transform.localEulerAngles = or.transform.eulerAngles;
 
                     or.GetComponent<Renderer>().enabled = false;
+                    gameObject.GetComponent<Renderer>().enabled = true;
 
                     break;            
                 }
@@ -43,6 +45,7 @@ public class followOriginal : MonoBehaviour
         }
         catch(Exception e){
             Debug.Log("not found");
+            gameObject.GetComponent<Renderer>().enabled = false;
         }
 
         
