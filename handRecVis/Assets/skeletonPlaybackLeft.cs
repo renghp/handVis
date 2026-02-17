@@ -26,16 +26,13 @@ using UnityEditor;
 /// Provides playback of handsequence.
 /// Use by adding this together with a renderer.
 /// </summary>
-public class SkeletonPlayback : MonoBehaviour, 
+public class SkeletonPlaybackLeft : MonoBehaviour, 
 HandSequence.SkeletonHandSequenceProvider, 
 MIDIDevice.MidiDataProvider, 
 KeyboardVisualizer.KeyboardDataProvider
 {
     [SerializeField]
     private OVRSkeleton.SkeletonType _skeletonType;
-
-    //[SerializeField]
-    //private OVRSkeleton.SkeletonType _skeletonTypeL;
     
     [SerializeField]
     private HandSequence _importSequence;

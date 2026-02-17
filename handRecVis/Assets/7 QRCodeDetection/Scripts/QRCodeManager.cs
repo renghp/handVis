@@ -136,6 +136,9 @@ namespace Meta.XR.MRUtilityKitSamples.QRCodeDetection
         GameObject _rightHandClone;
 
         [SerializeField]
+        GameObject _leftHandClone;
+
+        [SerializeField]
         Text _debugTextField;
 
         [SerializeField]
@@ -241,13 +244,22 @@ namespace Meta.XR.MRUtilityKitSamples.QRCodeDetection
                 
 
                 _rightHandClone.transform.localPosition = _qrCodePrefab.transform.localPosition;
-                //_rightHandClone.transform.localPosition = new Vector3(_rightHandClone.transform.localPosition.x + , _qrCodePrefab.transform.localPosition.y + 0.3f, _rightHandClone.transform.localPosition.z);
 
                 _rightHandClone.transform.localEulerAngles = _qrCodePrefab.transform.localEulerAngles;
 
                 _rightHandClone.transform.parent = instance.transform;
                 
                 _rightHandClone.gameObject.SetActive(true);
+
+                
+
+                _leftHandClone.transform.localPosition = _qrCodePrefab.transform.localPosition;
+
+                _leftHandClone.transform.localEulerAngles = _qrCodePrefab.transform.localEulerAngles;
+
+                _leftHandClone.transform.parent = instance.transform;
+                
+                _leftHandClone.gameObject.SetActive(true);
 
             }
 

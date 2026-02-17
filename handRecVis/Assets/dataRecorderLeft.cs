@@ -24,7 +24,7 @@ using UnityEngine.Android;
 ///
 /// </summary>
 
-public class DataRecorder :  MonoBehaviour
+public class DataRecorderLeft :  MonoBehaviour
 {
 
     [SerializeField]
@@ -78,33 +78,33 @@ public class DataRecorder :  MonoBehaviour
 
     public Text debuggerLogger;
 
-    public  AudioSource audioSource;
-
-    public GameObject videoRecorder;
-
-    public Transform proxyHeadPosition;
 
     int nr = 0;
     
     private void RecordCurrentFrame()
     {
+
+        //debuggerLogger.text += "\nprinting data: \n";
+
+        //debuggerLogger.text += "\nassigning data1: \n";
+
         HandSequence.HandFrame data = _dataProvider.GetHandFrameData();
+
+       // debuggerLogger.text += "\nprinting data1: \n";
+
+       // debuggerLogger.text += data;
+
         data.time = Time.time - _startTime;
         data.HasMidi = recordMidi;
         if(recordMidi){
             data.MidiData = _midiDataProvider.GetMidiData();
         }
+
+       // debuggerLogger.text += "\nwill add data";
     
         _handSequenceRecordings[_currentRecording].frames.Add(data);
 
-        if (proxyHeadPosition!=null)
-        {
-            _headPositions.Add(proxyHeadPosition.localPosition);
-            _headRotations.Add(proxyHeadPosition.localEulerAngles);
-
-
-        }
-
+       // debuggerLogger.text += "\ndata added";
     }
 
 
@@ -112,7 +112,7 @@ public class DataRecorder :  MonoBehaviour
     {
          Debug.Log("poked record");
          
-         debuggerLogger.text += "poked record";
+        // debuggerLogger.text += "poked record";
         
 
             if (!_isRecording)
@@ -125,21 +125,6 @@ public class DataRecorder :  MonoBehaviour
                 debuggerLogger.text += "* RECORDING STARTED L*";
 
 
-                foreach (var device in Microphone.devices)
-                {
-                    Debug.Log("mic Name: " + device);
-                }
-
-                if (audioSource!=null)
-                {
-                    audioSource.clip = Microphone.Start(null, false, 180, 16000);     //length?
-                    Debug.Log("mic started recording");  
-
-                    videoRecorder.GetComponent<recordAsVideo>().startRecording();
-                    Debug.Log("calling video recorder from data recorder");  
-
-                }
-
                 
                 
             }
@@ -150,14 +135,6 @@ public class DataRecorder :  MonoBehaviour
                 debuggerLogger.text = "* RECORDING STOPPED L*";
                 _currentRecording += 1;
 
-                if (audioSource!=null)
-                {
-                    Microphone.End(null);
-                    Debug.Log("mic stopped recording");  
-
-                    videoRecorder.GetComponent<recordAsVideo>().stopRecording();
-            
-                }
 
                 
 
@@ -313,13 +290,7 @@ public class DataRecorder :  MonoBehaviour
         _handSequenceRecordings = new List<HandSequence>();
         _handSequenceRecordingsL = new List<HandSequence>();
 
-        _headPositions = new List<Vector3>();
-        _headRotations = new List<Vector3>();
-        
-        if (audioSource!=null)
-        {
-            audioSource = audioSource.GetComponent<AudioSource>();
-        }
+
 
         SearchConfig();
         _config.OnKeyboardInputdeviceKeyPressed += KeyboardInput;
@@ -478,47 +449,6 @@ public class DataRecorder :  MonoBehaviour
             File.WriteAllLines(_saveLocation+"/"+ _fileName+".hseq", lines);
 
 
-
-
-            if (audioSource!=null)
-            {
-                lines = new List<string>();
-
-
-
-                _fileName = "recRnew.hseq_HP";  //_fileName + timestamp;
-
-                foreach (Vector3 hp in _headPositions)
-                {
-                    lines.Add(hp.x.ToString()+","+hp.y.ToString()+","+hp.z.ToString());
-                }
-            
-
-                File.WriteAllLines(_saveLocation+"/"+ _fileName, lines);
-
-
-                lines = new List<string>();
-
-
-
-                 _fileName = "recRnew.hseq_HR";  //_fileName + timestamp;
-
-                foreach (Vector3 hr in _headRotations)
-                {
-                    lines.Add(hr.x.ToString()+","+hr.y.ToString()+","+hr.z.ToString());
-                }
-            
-
-                File.WriteAllLines(_saveLocation+"/"+ _fileName, lines);
-
-            }
-
-            
-
-         
-
-
-
             debuggerLogger.text = "* EXPORTING FINISHED*";// + filename + " to " + _saveLocation + "\n not to " + Application.persistentDataPath;
   
             nr++;
@@ -536,9 +466,10 @@ public class DataRecorder :  MonoBehaviour
         var oldProviders = gameObject.GetComponentsInParent<HandSequence.SkeletonHandSequenceProvider>();
         foreach (var dataProvider in oldProviders)
         {
+            //Debug.Log("1: " + dataProvider.GetSkeletonType() + " 2: " + _skeletonType);
             if (dataProvider.GetSkeletonType() == _skeletonType)
             {
-                Debug.Log("Data provider found for Recorder");
+                //Debug.Log("Data provider found for Recorder");
                 return dataProvider;
             }
 

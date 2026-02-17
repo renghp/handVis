@@ -27,8 +27,26 @@ public class OVRHandConverter : MonoBehaviour, HandSequence.SkeletonHandSequence
 
     internal OVRSkeleton.IOVRSkeletonDataProvider SearchSkeletonDataProvider()
     {
-        GameObject obj = GameObject.Find("OVRHandPrefab");
+        GameObject obj;
 
+        if (_skeletonType.ToString()=="XRHandLeft")
+        {
+            obj = GameObject.Find("OVRHandPrefabL");
+            Debug.Log("found left");
+
+        }
+        else if (_skeletonType.ToString()=="XRHandRight")
+        {
+            obj = GameObject.Find("OVRHandPrefabR");
+            Debug.Log("found right");
+        }
+        else
+        {
+            obj = GameObject.Find("OVRHandPrefab");
+            Debug.Log("found neither");
+        }
+
+        
         var providers = obj.GetComponentsInParent<OVRSkeleton.IOVRSkeletonDataProvider>();
         Debug.Log(providers.Length);
         foreach (var dataProvider in providers)
