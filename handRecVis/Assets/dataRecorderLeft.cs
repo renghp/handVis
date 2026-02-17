@@ -238,7 +238,7 @@ public class DataRecorderLeft :  MonoBehaviour
 
         debuggerLogger.text += "\n * SETACTIVE TRUE STARTED L*";
 
-        SkeletonPlayback pb = _playbackGo.GetComponent<SkeletonPlayback>();
+        SkeletonPlaybackLeft pb = _playbackGo.GetComponent<SkeletonPlaybackLeft>();
 
         debuggerLogger.text += "\n * SKELETON STARTED *L";
 

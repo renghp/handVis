@@ -33,6 +33,9 @@ KeyboardVisualizer.KeyboardDataProvider
 {
     [SerializeField]
     private OVRSkeleton.SkeletonType _skeletonType;
+
+    //[SerializeField]
+    //private OVRSkeleton.SkeletonType _skeletonTypeL;
     
     [SerializeField]
     private HandSequence _importSequence;
@@ -55,25 +58,6 @@ KeyboardVisualizer.KeyboardDataProvider
 
     private bool isPlaying = false;
 
-    public AudioSource audioSource;
-
-    public Transform frustumHead;
-
-
-    private Texture2D texFromFile;
-
-    public RawImage texTarget;
-
-    private List<Vector3> _headPosFromFile;
-    private List<Vector3> _headRotFromFile;
-    //public Texture2D texTarget;
-
-    //private bool isRecording;
-
-
-    [Header("Recording Settings")]
-    public int captureFPS;
-    public string folderName = "ImageSequence";
 
     private int frameIndex = 0;
     private float frameTimer = 0f;
@@ -319,11 +303,8 @@ KeyboardVisualizer.KeyboardDataProvider
             StopPlayback();
             if (_loop) {
                 StartPlayback();
-                audioSource.Stop();
-                audioSource.time = 0.0f;
                 frameTimer = 0f;
-                audioSource.Play(); 
-                Debug.Log("mic started playing from skeletonpb 1");  
+
             }
             return;
         }
@@ -513,15 +494,12 @@ KeyboardVisualizer.KeyboardDataProvider
         frameTimer = 0f;
         frameIndex = 0;
 
-        _headPosFromFile = new List<Vector3>();
-        _headRotFromFile = new List<Vector3>();
 
         SearchConfig();
         _notesDown = new HashSet<int>();
         _sequence = _importSequence.DeepCopy();
         _midiEventBuffer = new List<HandSequence.SerializableNoteEvent>();
 
-        audioSource = GetComponent<AudioSource>();
 
         //gets the time of the last frame
         _recordingLength = _sequence.frames[_sequence.frames.Count - 1].time;
@@ -537,14 +515,10 @@ KeyboardVisualizer.KeyboardDataProvider
         _config.OnKeyboardInputdeviceKeyPressed += KeyboardInput;
 
         StartPlayback();        //forcing playback to start without key input
-        audioSource.Stop();
-        audioSource.time = 0.0f;
 
         isPlaying = true;
         frameTimer = 0f;
         frameIndex = 0;
-        audioSource.Play(0); 
-        Debug.Log("mic started playing from skeletonpb 2");
 
         
     }
@@ -579,71 +553,14 @@ KeyboardVisualizer.KeyboardDataProvider
         _config.OnKeyboardInputdeviceKeyPressed += KeyboardInput;
 
         StartPlayback();        //forcing playback to start without key input
-        audioSource.time = 0.0f;
+    
         isPlaying = true;
         frameTimer = 0f;
         frameIndex = 0;
-        audioSource.Play(0);  
-        Debug.Log("mic started playing from skeletonpb 3");
+
+
     }
 
-    void readFileHead(string fileName)
-    {
-        var file = new FileStream(Application.persistentDataPath + "/" + fileName + "_HP", FileMode.Open, FileAccess.Read);
-        var reader = new StreamReader(file);
-        float fileLength = file.Length;
-
-        debuggerLogger.text += "\nreading positions";
-
-        while (true)
-        {
-            string line = reader.ReadLine(); // Read a new line
-            if (line == null) break; // stop at end of file
-
-            debuggerLogger.text += "\nline read: " +line;
-            
-
-            var element = line.Trim().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(float.Parse).ToArray();
-
-            Vector3 read = new Vector3(element[0], element[1], element[2]);
-
-            debuggerLogger.text += "\n x read: " +element[0];
-            debuggerLogger.text += "\n z read: " +element[1];
-            debuggerLogger.text += "\n z read: " +element[2];
-
-            _headPosFromFile.Add(read);
-
-            
-        
-        }
-
-        debuggerLogger.text += "\nreading rotations";
-
-        file = new FileStream(Application.persistentDataPath + "/" + fileName + "_HR", FileMode.Open, FileAccess.Read);
-        reader = new StreamReader(file);
-        fileLength = file.Length;
-
-        while (true)
-        {
-            string line = reader.ReadLine(); // Read a new line
-            if (line == null) break; // stop at end of file
-            
-            debuggerLogger.text += "\nline read: " +line;
-
-            var element = line.Trim().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(float.Parse).ToArray();
-
-            Vector3 read = new Vector3(element[0], element[1], element[2]);
-
-            debuggerLogger.text += "\n x read: " +element[0];
-            debuggerLogger.text += "\n z read: " +element[1];
-            debuggerLogger.text += "\n z read: " +element[2];
-            
-            _headRotFromFile.Add(read);
-        
-        }
-
-        
-    }
 
     HandSequence readFile(string fileName)
     {
@@ -772,11 +689,6 @@ KeyboardVisualizer.KeyboardDataProvider
     public void OverrideMainSequence(HandSequence s)
     {
 
-        debuggerLogger.text += "\ncalling headFiles";
-        readFileHead("recRnew.hseq");
-
-        debuggerLogger.text += "\nheadFiles called";
-
 
         _sequence = s.DeepCopy();
         _midiEventBuffer = new List<HandSequence.SerializableNoteEvent>();
@@ -789,12 +701,9 @@ KeyboardVisualizer.KeyboardDataProvider
         Debug.Log("Override complete");
 
         StartPlayback();
-        audioSource.time = 0.0f;
         isPlaying = true;
         frameTimer = 0f;
         frameIndex = 0;
-        audioSource.Play(0);  
-        Debug.Log("mic started playing from skeletonpb 4");
 
     }
 
@@ -809,12 +718,11 @@ KeyboardVisualizer.KeyboardDataProvider
                 if(!_isPlaybackActive)
                 {
                     StartPlayback();
-                    audioSource.time = 0.0f;
+                    
                     isPlaying = true;
                     frameTimer = 0f;
                     frameIndex = 0;
-                    audioSource.Play(0); 
-                    Debug.Log("mic started playing from skeletonpb 5");
+                
                 }
                 // On active
                 else
@@ -863,45 +771,6 @@ KeyboardVisualizer.KeyboardDataProvider
         }
     }
 
-    string GetReadPath()
-    {
-        
-        #if UNITY_ANDROID && !UNITY_EDITOR
-                //debuggerLogger.text+="\nsaving path is:" + Path.Combine(Application.persistentDataPath, folderName);
-                return Path.Combine(Application.persistentDataPath, folderName);
-        #else
-                //debuggerLogger.text+="\nsaving path is:" + Path.Combine(Application.dataPath, folderName);
-                return Path.Combine(Application.dataPath, folderName);
-        #endif
-    }
-
-    Texture2D LoadTexture(string path, int currentFrame)
-    {
-
-        path = path + "/frame_"+currentFrame+".jpg";
-
-        if (!File.Exists(path))
-        {
-            frameTimer = 0f;
-            frameIndex = 0;
-
-            path = path + "/frame_"+frameIndex+".jpg";
-
-            byte[] imageData0 = File.ReadAllBytes(path);
-            texFromFile = new Texture2D(2, 2, TextureFormat.RGB24, false);
-            texFromFile.LoadImage(imageData0); // auto-resizes texture
-            return texFromFile;
-
-
-            //Debug.LogError("File not found: " + path);
-            //return null;
-        }
-
-        byte[] imageData = File.ReadAllBytes(path);
-        texFromFile = new Texture2D(2, 2, TextureFormat.RGB24, false);
-        texFromFile.LoadImage(imageData); // auto-resizes texture
-        return texFromFile;
-    }
 
 
 
@@ -913,47 +782,14 @@ KeyboardVisualizer.KeyboardDataProvider
         if (isPlaying)
         {
             frameTimer += Time.deltaTime;
-            texTarget.enabled = true;
+        
             
 
-         if (frameTimer >= 1f / captureFPS)         //$"frame_{frameIndex}.jpg"
-            {
-
-                frustumHead.localPosition = _headPosFromFile[_currentFrame];
-                frustumHead.localEulerAngles = _headRotFromFile[_currentFrame];
-
-                frameTimer -= 1f / captureFPS;          
-
-                texFromFile = LoadTexture(GetReadPath(), frameIndex);
-                texTarget.texture = texFromFile;
-                texTarget.SetNativeSize();
-
-                
-                /*RenderTexture.active = texFromFeed;
-                uncompTex.ReadPixels(new Rect(0, 0, texFromFeed.width, texFromFeed.height), 0, 0);
-                uncompTex.Apply();
-                RenderTexture.active = null;*/
-
-
-                frameIndex++;
-            }
-
+         
         }
 
-        else
-        {
-            texTarget.enabled = false;
-        }
-        
 
-        if (audioSource.time > _recordingLength)
-        {
-            isPlaying = true;
-            frameTimer = 0f;
-            frameIndex = 0;
-            audioSource.Play(0);
-            Debug.Log("time is: "+_playbackTime);
-        }
+
 
         
         if (Input.GetKeyDown(KeyCode.P))

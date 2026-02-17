@@ -17933,7 +17933,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1508237189}
   - component: {fileID: 1508237194}
-  - component: {fileID: 1508237193}
+  - component: {fileID: 1508237195}
   - component: {fileID: 1508237192}
   - component: {fileID: 1508237191}
   - component: {fileID: 1508237190}
@@ -17971,7 +17971,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94ca59b018138de47bc53b53b28ef234, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _skeletonType: 5
+  _skeletonType: 4
   blackKeyOffset: 2.5
   blackKeyHeight: 0.01
   _debugMode: 0
@@ -18009,34 +18009,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f5cf4683329c648b983fd4b577cdeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1508237193
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1508237188}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 575cfd7e91a5b4a3683131265d674adc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _skeletonType: 5
-  _importSequence: {fileID: -4060129950355911849, guid: cc05b19dfc3fe1e4a862938a193976a1,
-    type: 3}
-  _loop: 1
-  debuggerLogger: {fileID: 1483085123}
-  audioSource: {fileID: 1522402471}
-  frustumHead: {fileID: 1372012489}
-  texTarget: {fileID: 1810481290}
-  captureFPS: 24
-  folderName: ImageSequence
-  progressBarPrefab: {fileID: 8180707522254626348, guid: 0eeb50c61da4c174391002c096f8c439,
-    type: 3}
-  _isPlaybackActive: 0
-  PlayMidi: 1
-  _midiEventBuffer: []
-  _interpolationMode: 0
 --- !u!114 &1508237194
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18049,8 +18021,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64b289779bd3c404b93dc984ab300bcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _skeletonType: 5
+  _skeletonType: 4
   origin: {fileID: 11251565}
+--- !u!114 &1508237195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508237188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a10b4dfa6e54758428689e832ce9f353, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _skeletonType: 4
+  _importSequence: {fileID: 0}
+  _loop: 1
+  debuggerLogger: {fileID: 1483085123}
+  progressBarPrefab: {fileID: 8180707522254626348, guid: 0eeb50c61da4c174391002c096f8c439,
+    type: 3}
+  _isPlaybackActive: 0
+  PlayMidi: 1
+  _midiEventBuffer: []
+  _interpolationMode: 0
 --- !u!1 &1517023851
 GameObject:
   m_ObjectHideFlags: 0
@@ -20458,9 +20452,9 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1810481287}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.015384615, y: 0.019999998, z: 0.016666666}
+  m_LocalScale: {x: 0.015384615, y: 0.016666666, z: 0.019999998}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 163238174}
@@ -33168,7 +33162,7 @@ MonoBehaviour:
   progressBarPrefab: {fileID: 8180707522254626348, guid: 0eeb50c61da4c174391002c096f8c439,
     type: 3}
   _isPlaybackActive: 0
-  PlayMidi: 1
+  PlayMidi: 0
   _midiEventBuffer: []
   _interpolationMode: 0
 --- !u!1 &7794525045441885757
