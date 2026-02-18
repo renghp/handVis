@@ -63,39 +63,46 @@ public class SkeletonRenderer : MonoBehaviour
         public BoneVisualization(int index, BoneVisualization parent, Vector3 refPosition, BoneVisualization wrist)
         {
             ID = OVRHandData.GetJointIDfromIndex(index);
-            _parent = parent;
-            _bonePosition = refPosition;
+
             
-          //  jointGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-          //  jointGO.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
-          //  jointGO.transform.SetParent(_handGO.transform, true);
+                _parent = parent;
+                _bonePosition = refPosition;
+                
+            //  jointGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            //  jointGO.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+            //  jointGO.transform.SetParent(_handGO.transform, true);
 
-            boneGO = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            boneGO.name = ("bone-" + ID.ToString());
+                boneGO = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                boneGO.name = ("bone-" + ID.ToString());
 
-           
-
-            boneGO.transform.SetParent(_handGO.transform, true);
-
-
-
-           boneGO.transform.tag = ("originalRight");
-           // else
-            //    boneGO.transform.parent.tag = ("originalRight");
-
-            _material = new Material(Shader.Find("Universal Render Pipeline/Lit"));   
-            //_material.color = OVRHandData.jointsCustom[index].Color;
-            _material.color = Color.gray;
-            boneGO.GetComponent<Renderer>().material = _material;
-            //jointGO.GetComponent<Renderer>().material = _material;
-
-            float bone_length = 1.0f;
-            if (parent != null) {
-                _delta = _bonePosition - _parent.BonePosition;
-                bone_length = _delta.magnitude;
-            }
             
-            boneGO.transform.localScale = new Vector3(0.015f, bone_length/2, 0.015f);
+
+                boneGO.transform.SetParent(_handGO.transform, true);
+
+
+
+                boneGO.transform.tag = ("originalRight");
+                // else
+                //    boneGO.transform.parent.tag = ("originalRight");
+
+                _material = new Material(Shader.Find("Universal Render Pipeline/Lit"));   
+                //_material.color = OVRHandData.jointsCustom[index].Color;
+                _material.color = Color.gray;
+                boneGO.GetComponent<Renderer>().material = _material;
+                //jointGO.GetComponent<Renderer>().material = _material;
+
+                float bone_length = 1.0f;
+                if (parent != null) {
+                    _delta = _bonePosition - _parent.BonePosition;
+                    bone_length = _delta.magnitude;
+                }
+                
+                boneGO.transform.localScale = new Vector3(0.015f, bone_length/2, 0.015f);
+
+                if (ID.ToString()=="Wrist" || ID.ToString()=="Palm")
+                {
+                    boneGO.SetActive(false);
+                }
         }
 
         public void Update()
