@@ -24,6 +24,8 @@ public class SkeletonRendererLeft : MonoBehaviour
     private static readonly Quaternion _capsuleRotationOffset = Quaternion.Euler(90, 0, 0);
 
     public static GameObject _handGO;
+
+    public Transform origin;
     
     void Start()
     {
@@ -36,9 +38,11 @@ public class SkeletonRendererLeft : MonoBehaviour
     private class BoneVisualization
     {
         private Vector3 _bonePosition;
-        private BoneVisualization _parent;
+        public BoneVisualization _parent;
         private Vector3 _delta;
         public OVRHandData.ovrHandEnum ID;
+
+        
         
         public Vector3 BonePosition { 
             get => _bonePosition;
@@ -50,7 +54,7 @@ public class SkeletonRendererLeft : MonoBehaviour
             set { _boneRotation = value; }
         }
         
-        private GameObject jointGO;
+       // private GameObject jointGO;
         private GameObject boneGO;
 
         private Material _material;
@@ -62,20 +66,28 @@ public class SkeletonRendererLeft : MonoBehaviour
             _parent = parent;
             _bonePosition = refPosition;
             
-            jointGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            jointGO.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
-            jointGO.transform.SetParent(_handGO.transform, true);
+          //  jointGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+          //  jointGO.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+          //  jointGO.transform.SetParent(_handGO.transform, true);
 
             boneGO = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             boneGO.name = ("bone-" + ID.ToString());
 
+           
+
             boneGO.transform.SetParent(_handGO.transform, true);
+
+
+
+           boneGO.transform.tag = ("originalLeft");
+           // else
+            //    boneGO.transform.parent.tag = ("originalRight");
 
             _material = new Material(Shader.Find("Universal Render Pipeline/Lit"));   
             //_material.color = OVRHandData.jointsCustom[index].Color;
             _material.color = Color.gray;
             boneGO.GetComponent<Renderer>().material = _material;
-            jointGO.GetComponent<Renderer>().material = _material;
+            //jointGO.GetComponent<Renderer>().material = _material;
 
             float bone_length = 1.0f;
             if (parent != null) {
@@ -90,21 +102,24 @@ public class SkeletonRendererLeft : MonoBehaviour
         {
             if (_parent != null)
             {
+
+                //boneGO.transform.SetParent = origin.transform;
+
                 _delta = _bonePosition - _parent.BonePosition;
                 boneGO.transform.position = BonePosition - _delta/2;
                 boneGO.transform.localRotation = BoneRotation * _capsuleRotationOffset;
                 boneGO.SetActive(ShouldRender);
             }
             
-            jointGO.transform.localPosition = BonePosition;
+           // jointGO.transform.localPosition = BonePosition;
             
-            jointGO.SetActive(ShouldRender);
+            //jointGO.SetActive(ShouldRender);
             if (!ShouldRender) return;
         }
 
         public void DestroyVis()
         {
-            Destroy(jointGO);
+            //Destroy(jointGO);
             if (_parent != null)
             {
                 Destroy(boneGO);
