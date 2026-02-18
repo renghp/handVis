@@ -34,6 +34,7 @@ public class followOriginalLeft : MonoBehaviour
                     Debug.Log(or.name);
                     transform.localPosition = or.transform.position;
                     transform.localEulerAngles = or.transform.eulerAngles;
+                    //transform.localScale = or.transform.localScale;
 
                     or.GetComponent<Renderer>().enabled = false;
                     gameObject.GetComponent<Renderer>().enabled = true;
